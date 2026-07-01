@@ -1,5 +1,15 @@
 # Release Notes
 
+## v0.2.0
+
+### Changed
+
+- Recommended chat-based Markdown/YAML input as the default way to collect basic software copyright information.
+- Kept the Excel form as an optional handoff format for agencies, collaborators, or file-based workflows.
+- Updated workflow documentation to require four confirmed inputs: basic information, Unity project root, screenshot directory, and output directory.
+- Added README instructions for installing from the GitHub `latest` zip package.
+- Updated the MIT license copyright holder for public publishing.
+
 ## v0.1.0
 
 Initial public release.

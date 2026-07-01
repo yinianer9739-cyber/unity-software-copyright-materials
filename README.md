@@ -61,6 +61,16 @@ unity-software-copyright-materials/
 
 复制后重启 Codex，使 skill 被重新发现。
 
+## 从 latest zip 安装
+
+从 GitHub Releases 下载 `unity-software-copyright-materials-latest.zip` 后，解压得到 `unity-software-copyright-materials/` 目录，并放到：
+
+```text
+%USERPROFILE%\.codex\skills\unity-software-copyright-materials
+```
+
+发布 zip 应包含 `SKILL.md`、`README.md`、`LICENSE`、`RELEASE_NOTES.md`、`agents/`、`assets/`、`references/` 和 `scripts/`，不需要包含 `.git/` 或本地生成的输出材料。
+
 ## 基本工作流
 
 1. 选择基础信息输入方式，推荐直接在聊天里粘贴 Markdown/YAML。

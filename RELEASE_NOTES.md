@@ -1,5 +1,23 @@
 # Release Notes
 
+## v0.3.0
+
+### Added
+
+- Added `VERSION` with current version `0.3.0`.
+- Added package-first workflow: one materials package directory with `软著基础信息.zh.yaml`, `截图/`, `输出/`, and `报告/`.
+- Added a full Chinese YAML input template with registration fields, project description, development/runtime environment fields, examples, notes, and option references.
+- Added `scripts/create_materials_package.py` to create or repair a materials package without overwriting existing YAML.
+- Added `scripts/check_version_and_update.py` to compare local and remote `VERSION`, write an update checkpoint, update from GitHub, and stop for client restart.
+- Added mandatory audit gates for line-number-free 3200+ line code excerpts, healthy-game login notice, login-entry explanations, exit screenshots, and unexplained screenshot UI entries.
+- Added explicit YAML-to-registration-application-form field mapping without changing the `0.3.0` version number.
+
+### Changed
+
+- `输出/` is now reserved for the three final formal material files only.
+- Support reports now belong under `报告/` and should be linked in the final assistant response.
+- Screenshot scanning now warns more clearly about login, health notice, exit, and battle screenshot risks.
+
 ## v0.2.0
 
 ### Changed

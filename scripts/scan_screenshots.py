@@ -10,6 +10,9 @@ BATTLE_KEYWORDS = ("战斗", "battle", "fight", "combat", "出征", "战役")
 VICTORY_KEYWORDS = ("胜利", "victory", "win", "success")
 DEFEAT_KEYWORDS = ("失败", "defeat", "fail", "failure", "lose", "loss")
 HP_CHANGE_KEYWORDS = ("血量", "血条", "生命", "hp", "health", "变化", "倒计时", "计时")
+LOGIN_KEYWORDS = ("登录", "login")
+HEALTH_NOTICE_KEYWORDS = ("健康", "公告", "适龄", "防沉迷", "health", "notice", "announcement")
+EXIT_KEYWORDS = ("退出", "exit", "quit", "return", "返回")
 
 
 def sha256(path: Path) -> str:
@@ -83,10 +86,14 @@ def main() -> None:
 
     names = " ".join(item["file"].lower() for item in items)
     warnings = []
-    if "登录" not in names and "login" not in names:
-        warnings.append("未从文件名识别到登录截图。")
-    if "退出" not in names and "exit" not in names and "quit" not in names:
-        warnings.append("未从文件名识别到退出截图。")
+    has_login = any(keyword in names for keyword in LOGIN_KEYWORDS)
+    has_health_notice = any(keyword in names for keyword in HEALTH_NOTICE_KEYWORDS)
+    if not has_login:
+        warnings.append("未从文件名识别到登录截图。登录界面是软著说明书常见必备材料，缺失可能影响审核。")
+    elif not has_health_notice:
+        warnings.append("已识别到登录截图，但未从文件名识别到健康游戏公告/适龄/防沉迷等提示。登录界面必须包含健康游戏公告或等效提示，建议补充或重命名截图以便复核。")
+    if not any(keyword in names for keyword in EXIT_KEYWORDS):
+        warnings.append("未从文件名识别到退出截图。建议提供退出战斗和退出整个 APP 的截图与说明来源。")
     battle_items = [
         item for item in items
         if any(keyword in item["file"].lower() for keyword in BATTLE_KEYWORDS)

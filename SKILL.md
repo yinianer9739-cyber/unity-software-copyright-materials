@@ -5,133 +5,120 @@ description: Use when generating or revising Chinese software copyright material
 
 # Unity 游戏软著材料生成
 
-Use this skill for Unity game software copyright materials. It is template-driven and evidence-driven:
+Use this skill for Unity game software copyright materials. It is package-driven and evidence-driven:
 
-- Prefer collecting basic information directly in chat as Markdown or YAML.
-- Offer the Excel form only when the user wants a file-based handoff or an agency requires it.
-- User provides one Unity project root.
-- User provides one final function screenshot directory.
-- User provides one final output directory.
+- Always check the remote `VERSION` before starting the workflow.
+- Prefer one user-selected materials package directory.
+- Store user input in `<package-dir>/软著基础信息.zh.yaml`.
+- Derive screenshots from `<package-dir>/截图/`.
+- Generate only the three final formal files in `<package-dir>/输出/`.
+- Write support reports in `<package-dir>/报告/`.
 - Use the three bundled Word templates:
   - `assets/templates/游戏软件说明书模板.docx`
   - `assets/templates/源代码节选模板.docx`
   - `assets/templates/计算机软件著作权登记申请表模板.doc`
 
-## Basic Information Input
+## Version Check Gate
 
-At the start, ask the user which input mode they prefer. Recommend chat input unless they specifically need Excel:
+At the start of every skill run, check the GitHub repository version before collecting or generating materials:
+
+```powershell
+python3 <skill>/scripts/check_version_and_update.py --stage <current-stage>
+```
+
+If `python3` is unavailable on Windows, use an available Python 3 runtime explicitly. Do not use Python 2.
+
+If a materials package directory is already known, also pass `--package-dir <package-dir>` so the checkpoint can resume with more context.
+
+Remote repository: `https://github.com/yinianer9739-cyber/unity-software-copyright-materials.git`.
+
+If the online version check fails because the network or remote `VERSION` is unavailable, warn the user and continue with the local skill.
+
+If the remote `VERSION` is newer than local:
+
+- write `.skill-update-checkpoint.json` in the skill directory;
+- update the local skill from GitHub;
+- stop immediately;
+- tell the user to restart Codex or the current AI client;
+- after restart, the user can reply `继续` to resume the unfinished workflow.
+
+## Materials Package
+
+Ask the user to choose one materials package directory. If it is new, create it. If it already exists, repair missing directories and never overwrite an existing YAML file.
+
+```powershell
+python3 <skill>/scripts/create_materials_package.py --package-dir <package-dir>
+```
+
+Package layout:
 
 ```text
-建议直接在聊天里粘贴基础信息，我会整理成软著材料字段；如果你更方便交给同事或代理机构填写，也可以使用 Excel 表单。你想用聊天输入还是 Excel？
+<package-dir>/
+  软著基础信息.zh.yaml
+  截图/
+  输出/
+  报告/
 ```
 
-For chat input, ask the user to paste Markdown or YAML with as many fields as they know. Missing fields may be marked red `待补充` later if the user allows it.
+Rules:
 
-```yaml
-软件全称:
-软件简称:
-版本号: V1.0
-软件分类: 应用软件
-开发完成日期: YYYY-MM-DD
-开发方式: 单独开发
-软件说明: 原创
-发表状态: 未发表
-首次发表日期:
-著作权人名称:
-著作权人类型:
-国家/地区: 中国
-省市:
-证件类型:
-证件号码:
-权利取得方式: 原始取得
-权利范围: 全部权利
-源程序总行数:
+- `输出/` contains only the three final files: 游戏软件说明书, 源代码节选, 计算机软件著作权登记申请表.
+- `报告/` contains support files such as 生成结果报告 and 验证报告.
+- screenshots are always read from `截图/`; do not ask the user to fill screenshot paths.
+- output path is always `输出/`; do not ask the user to fill output paths.
+- the YAML still requires `项目路径.Unity项目根目录`.
+- YAML template: `assets/templates/软著基础信息.zh.yaml`.
 
-游戏名称:
-游戏类型:
-游戏概述:
-开发目的:
-用户分析:
-核心玩法:
-主要功能:
-功能特点:
-技术特点:
-运行平台:
+## Mandatory Audit Gates
 
-开发硬件环境:
-运行硬件环境:
-开发操作系统:
-软件开发环境/开发工具:
-运行平台/操作系统:
-运行支撑环境/支持软件:
-编程语言:
+Before final generation, audit these five items. If any item is missing, inconsistent, or likely non-compliant, warn the user that the material may fail review and recommend updating the material before continuing.
 
-Unity项目根目录:
-功能截图目录:
-最终软著材料输出目录:
-是否允许缺失字段标红待补充: 是
-其他特别要求: 代码不显示行号、源代码节选不少于 3200 行
-```
-
-If the user chooses Excel, create or copy the input form in `assets/templates/Unity游戏软著基础信息填写表模板.xlsx`. The form structure is:
-
-- column A: field name;
-- column B: user value;
-- column C: `*` means required;
-- column D: note or recommended length.
-
-Screenshot filenames should help the scanner identify functions. Recommend names such as `登录.png`, `主界面.png`, `战斗_血量变化_1.png`, `战斗_血量变化_2.png`, `战斗_胜利结算.png`, `战斗_失败结算.png`, and `退出.png`.
+1. Code excerpts must not display line numbers, and the source code excerpt must include at least 3200 lines.
+2. The login screen must include a healthy-game notice or equivalent health/game announcement.
+3. If account, password, registration, or start-game entries appear on the login screen, the manual must explain them.
+4. Recommend providing both battle-exit and whole-app-exit screenshots, plus the source entry or operation for each.
+5. If a screenshot shows a button or entry not explained in the manual, recommend adding an explanation or removing that visual element from the screenshot.
 
 ## Required Workflow
 
-1. Collect basic information through chat or Excel.
-
-   - For chat input, normalize the pasted fields into the same field names used by the Excel form before generating materials.
-   - For Excel input, create or copy the Excel input form for the user:
-
-   ```powershell
-   python3 <skill>/scripts/create_input_form.py --out-dir <output-dir>
-   ```
-
-   If `python3` is unavailable on Windows, use an available Python 3 runtime explicitly. Do not use Python 2.
-
-2. Stop until the user has provided the basic information and confirmed the Unity project root, screenshot directory, and output directory.
-
-3. If Excel was used, parse it:
+1. Run the version check gate.
+2. Create or repair the materials package directory.
+3. Stop until the user fills `软著基础信息.zh.yaml` and places screenshots under `截图/`.
+4. Read `项目路径.Unity项目根目录` from YAML and analyze the Unity project:
 
    ```powershell
-   python3 <skill>/scripts/parse_input_form.py --form <xlsx> --out-dir <output-dir>/00-表单解析
+   python3 <skill>/scripts/analyze_unity_project.py --project <Unity project root> --out-dir <package-dir>/报告/01-项目分析
    ```
 
-4. Analyze the Unity project:
+5. Scan screenshots:
 
    ```powershell
-   python3 <skill>/scripts/analyze_unity_project.py --project <Unity project root> --out-dir <output-dir>/01-项目分析
+   python3 <skill>/scripts/scan_screenshots.py --screenshots <package-dir>/截图 --out-dir <package-dir>/报告/02-截图清单
    ```
 
-5. Scan the screenshot directory:
+6. Apply the mandatory audit gates. Pause when a gate has a high-risk warning unless the user explicitly confirms to continue.
 
-   ```powershell
-   python3 <skill>/scripts/scan_screenshots.py --screenshots <screenshot-dir> --out-dir <output-dir>/02-截图清单
-   ```
-
-6. Generate materials from the templates. Use `docx-toolkit` or Word/OpenXML patching. The manual template intentionally contains only the title/header placeholders, TOC entries 1-7, and body headings 1-7. Generate all section 7 sub-sections dynamically from the user-provided screenshot directory and project evidence. See:
+7. Generate materials from the templates. Use `docx-toolkit` or Word/OpenXML patching. The manual template intentionally contains only the title/header placeholders, TOC entries 1-7, and body headings 1-7. Generate all section 7 sub-sections dynamically from the screenshot directory and project evidence. See:
 
    - `references/workflow.md`
+   - `references/application-form-field-mapping.md`
    - `references/manual-and-application-rules.md`
    - `references/code-excerpt-rules.md`
    - `references/validation-rules.md`
 
-7. Verify outputs:
+8. Verify outputs:
 
    ```powershell
-   python3 <skill>/scripts/verify_outputs.py --output-dir <output-dir>/04-正式材料 --report <output-dir>/验证报告.md
+   python3 <skill>/scripts/verify_outputs.py --output-dir <package-dir>/输出 --report <package-dir>/报告/验证报告.md
    ```
+
+9. In the final reply, include clickable links to the three final files and support reports.
 
 ## Hard Rules
 
 - Do not assume all Unity business code is Lua. Prefer real business code from C#, Lua, ToLua, or other project-specific scripts.
 - Exclude `.meta`, `Library`, `Temp`, build output, minified files, and third-party libraries unless the user explicitly requests them.
+- Code excerpts must not display line numbers and must include at least 3200 lines unless the user explicitly documents a different legal/agency requirement.
 - Login screenshots must include a healthy-game notice or equivalent health/game announcement.
 - If the login screen includes account, password, registration, or start-game entries, the manual must explain them.
 - Try to include both battle exit and whole-app exit screenshots and explain the source entry for each.
@@ -139,23 +126,25 @@ Screenshot filenames should help the scanner identify functions. Recommend names
 - If a screenshot shows a button or entry that the manual does not explain, warn the user that legal review may ask them to add explanation or remove the visual element.
 - Missing user-supplied fields may be written as red `待补充` when the form allows it.
 - Final material names, headers, and application form software name/version must be consistent.
+- Generate the registration application form from `软著基础信息.zh.yaml` according to `references/application-form-field-mapping.md`; do not treat the YAML as only manual-writing context.
 - Do not add fixed section 7 sub-sections to the manual template. Section 7 details are generated from the final screenshot directory.
 - Do not pre-fill the source code excerpt template with fixed modules. Generate code sections according to the screenshot-derived function list and real Unity project source code.
 
 ## Output Layout
 
-Use the user-confirmed output directory:
+Use the user-selected materials package directory:
 
 ```text
-<output-dir>/
-  00-用户填写表单/
-  00-表单解析/
-  01-项目分析/
-  02-截图清单/
-  03-草稿/
-  04-正式材料/
-  生成报告.md
-  验证报告.md
+<package-dir>/
+  软著基础信息.zh.yaml
+  截图/
+  输出/
+    游戏软件说明书.docx
+    源代码节选.docx
+    计算机软件著作权登记申请表.docx
+  报告/
+    生成结果报告.md
+    验证报告.md
 ```
 
 ## When Editing DOCX/DOC

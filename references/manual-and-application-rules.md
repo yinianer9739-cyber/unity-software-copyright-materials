@@ -7,11 +7,11 @@
 - Try to include battle exit and whole-app exit. Explain the source entry for both, such as a battle exit button, main screen exit button, settings button, or mobile back key.
 - When a battle module exists, confirm before final output that the screenshot set includes victory result, failure result, and battle HP/blood-bar change screenshots. If any are missing, pause and ask the user whether to supplement or continue.
 - Screenshots should match the final project version supplied by the user.
-- If a screenshot shows an unexplained button or function entry, flag it in the generation report.
+- If a screenshot shows an unexplained button or function entry, warn that legal/software-copyright review may fail and recommend adding explanation or removing the visual element.
 
 ## First Six Manual Chapters
 
-Use the filled Excel form to write or replace chapters 1-6:
+Use the filled package YAML to write or replace chapters 1-6:
 
 - `1. 游戏名称`;
 - `2. 运行环境`;
@@ -30,7 +30,7 @@ When generating final materials, create `7.x` sub-sections from the final screen
 
 ## Registration Application Form
 
-Use the Excel form as the source for:
+Use the package YAML as the source for the registration application form. Follow `references/application-form-field-mapping.md` for field-level mapping; do not rely on loose semantic matching when a mapped YAML field exists.
 
 - software full name, short name, version;
 - classification, development completion date, development method;
@@ -43,7 +43,7 @@ Use the Excel form as the source for:
 - main functions;
 - technical characteristics.
 
-If the form allows missing values, write red `待补充` in final documents for unresolved fields. Report every unresolved field in `生成报告.md`.
+If the YAML allows missing values, write red `待补充` in final documents for unresolved fields. Report every unresolved field in `报告/生成结果报告.md`.
 
 ## Consistency
 

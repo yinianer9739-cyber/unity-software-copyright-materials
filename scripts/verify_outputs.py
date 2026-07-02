@@ -56,6 +56,11 @@ def main() -> None:
 
     files = sorted([p for p in output_dir.glob("*") if p.is_file()]) if output_dir.exists() else []
     docx_results = [inspect_docx(path) for path in files if path.suffix.lower() == ".docx"]
+    high_risk = []
+    for item in docx_results:
+        if "代码" in Path(item["path"]).name or "源代码" in Path(item["path"]).name:
+            if item["line_number_markers"] > 0:
+                high_risk.append("源代码节选疑似显示了行号；固定要求为代码不显示行号，建议更新材料。")
     missing_kinds = []
     names = " ".join(path.name for path in files)
     if "说明书" not in names:
@@ -71,6 +76,11 @@ def main() -> None:
         for item in missing_kinds:
             lines.append(f"- 未识别到：{item}")
         lines.append("")
+    if high_risk:
+        lines.append("## 高风险提醒")
+        for item in high_risk:
+            lines.append(f"- {item}")
+        lines.append("")
     lines.extend(["## 文件", "", "| 文件 | 大小 |", "|---|---:|"])
     for path in files:
         lines.append(f"| {path.name} | {path.stat().st_size} |")
@@ -83,9 +93,12 @@ def main() -> None:
             )
     report.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"REPORT: {report}")
-    if missing_kinds:
+    if missing_kinds or high_risk:
         print("STOP_FOR_USER")
-        print("NEXT_ACTION: 输出目录中未识别到完整三份材料，请确认文件名或重新生成。")
+        if missing_kinds:
+            print("NEXT_ACTION: 输出目录中未识别到完整三份材料，请确认文件名或重新生成。")
+        for item in high_risk:
+            print(f"NEXT_ACTION: {item}")
 
 
 if __name__ == "__main__":

@@ -20,11 +20,13 @@ Then include relevant file paths and code.
 
 ## Line Number Policy
 
-Follow the filled form or user instruction. If the user says not to show line numbers, do not display per-line prefixes and do not add a visible total-line-count paragraph unless required elsewhere.
+Fixed requirement: code excerpts must not display line numbers. Do not display per-line prefixes such as `001:` and do not add visible line-number columns.
 
 ## Minimum Volume
 
-If the user or agency requires a minimum source excerpt length, meet that requirement with business-relevant code first. Use framework code only as a supplement.
+Fixed requirement: the source code excerpt must include at least 3200 lines. Meet this requirement with business-relevant code first. Use framework code only as a supplement.
+
+If either the no-line-number rule or the 3200-line minimum is not satisfied, warn the user that the material may fail review and recommend updating the material before continuing.
 
 ## Traceability Report
 

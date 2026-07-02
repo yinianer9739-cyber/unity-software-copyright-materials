@@ -1,6 +1,6 @@
 # Screenshot Rules
 
-Use one final user-provided screenshot directory.
+Use `<package-dir>/截图/` as the final user-provided screenshot directory.
 
 ## Inventory
 
@@ -18,9 +18,13 @@ Scan image files and write:
 Warn when:
 
 - no screenshot looks like a login screenshot;
+- no login screenshot filename or user evidence indicates a healthy-game notice or equivalent health/game announcement;
 - no screenshot filename suggests exit, quit, or return;
 - no screenshot filename suggests battle/combat;
 - the user says login exists but no login image appears.
+- screenshot filenames or user evidence suggest account/password/register/start-game entries but the manual plan does not explain them.
+
+For these reminders, tell the user the material may fail review when the issue affects login compliance, exit coverage, or unexplained UI entries.
 
 ## Battle Screenshot Confirmation Gate
 
@@ -32,7 +36,7 @@ If screenshot filenames indicate a battle module, check whether the screenshot s
 
 If any of these are missing, stop before generating final materials. Tell the user exactly which battle screenshots are missing, recommend supplementing them, and continue only after the user either adds the screenshots or explicitly confirms to proceed.
 
-Do not infer detailed UI controls from pixels unless the user explicitly asks for visual inspection. Prefer filename and user form evidence.
+Do not infer detailed UI controls from pixels unless the user explicitly asks for visual inspection. Prefer filename and package YAML evidence.
 
 ## Embedding
 

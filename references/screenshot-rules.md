@@ -1,12 +1,15 @@
 # Screenshot Rules
 
-Use `<package-dir>/截图/` as the final user-provided screenshot directory.
+Use `<package-dir>/截图/` as the only final screenshot directory.
+
+Final materials may only use image files whose resolved paths are under `<package-dir>/截图/`. Do not use screenshots from outside the package, previous packages, Unity project folders, browser downloads, caches, build output, or unrelated workspaces. Symlink or reparse-point escapes outside `<package-dir>/截图/` must be rejected.
 
 ## Inventory
 
 Scan image files and write:
 
 - file name;
+- resolved path source check;
 - extension;
 - byte size;
 - last modified time;
@@ -41,3 +44,5 @@ Do not infer detailed UI controls from pixels unless the user explicitly asks fo
 ## Embedding
 
 When patching the manual, verify embedded image hashes when possible. A same filename can be updated; hash is the reliable signal.
+
+If a useful screenshot is outside `<package-dir>/截图/`, stop and ask the user to place it under the package screenshot directory. Do not copy it silently.

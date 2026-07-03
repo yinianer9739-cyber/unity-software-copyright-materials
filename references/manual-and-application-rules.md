@@ -2,6 +2,7 @@
 
 ## Required Manual Checks
 
+- All screenshots used in the manual must resolve under `<package-dir>/截图/`. Do not use images found outside the package or silently copy external screenshots into the package.
 - Login/startup/entry screen must include a healthy-game notice or equivalent health/game announcement. If the PC game has no login or registration, treat the startup or start-game entry screen as the login-equivalent audit screen.
 - If account, password, registration, or start-game entries appear on the login/startup/entry screen, explain them in the manual.
 - Try to include battle exit and whole-app exit. Explain the source entry for both, such as a battle exit button, main screen exit button, settings button, or mobile back key.
@@ -48,6 +49,18 @@ If the YAML allows missing values, write red `待补充` in final documents for 
 Legal-team applicant identity fields, such as copyright owner name, owner type, country/region, province/city, certificate type, and certificate number, are intentionally excluded from the technical YAML and should be completed by legal staff. Do not block technical pre-review because these fields are absent from YAML.
 
 For checkbox/option fields such as software classification, development method, software statement, publication status, rights acquisition, and rights scope, select the corresponding option in the application form. Do not merely append the selected value as plain text if the template uses checkboxes or option markers.
+
+Generate the application form after source analysis and source excerpt generation. If `登记信息.源程序总行数` is empty, fill the normalized generation data from the computed project-authored source program line count before patching the form. If the YAML value differs from the computed count, use the computed count for final-material consistency and list the mismatch in `报告/生成结果报告.md`.
+
+## Template Protection
+
+Generate all final Word files by copying the bundled templates and patching the copies in place:
+
+- `assets/templates/游戏软件说明书模板.docx`;
+- `assets/templates/源代码节选模板.docx`;
+- `assets/templates/计算机软件著作权登记申请表模板.doc`.
+
+Do not create final Word files from blank DOCX documents, Markdown conversion, HTML conversion, or rebuilt table layouts. For the registration application form, preserve the original template table structure, controls, checkbox/option markers, row/column counts, page setup, and spacing. If safe template-preserving editing is unavailable, stop and report the blocker instead of generating a visually different replacement.
 
 ## Consistency
 

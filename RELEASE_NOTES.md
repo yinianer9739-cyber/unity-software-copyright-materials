@@ -1,5 +1,18 @@
 # Release Notes
 
+## v0.5.0
+
+### Changed
+
+- Updated `VERSION` to `0.5.0`.
+- Reworked automatic screenshot execution into two explicit user choices: temporary project copy mode, recommended and slower, or current Unity instance takeover mode, faster but requiring exact user confirmation.
+- Made Unity-internal screenshot capture mandatory for automatic screenshots. OS mouse control and desktop/window screenshots are no longer valid final automatic screenshot sources.
+- Added a strict screenshot source whitelist: final materials may only use images resolved under the selected package `截图/` directory; external images and symlink escapes are rejected.
+- Added screenshot manifest requirements for automatic captures, including source project, working project, scene, action, capture method, and quality result.
+- Added template-protection mode for Word output: copy bundled templates first and patch the copies in place; do not rebuild DOC/DOCX files or reconstruct registration-form tables.
+- Added source line-count closure: generate/analyze source code before the application form, compute source program line count and selected excerpt line count, fill the application form automatically, and verify consistency.
+- Strengthened `scan_screenshots.py` to reject image files whose resolved paths are outside the screenshot directory.
+
 ## v0.4.2
 
 ### Changed

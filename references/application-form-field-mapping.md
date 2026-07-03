@@ -2,6 +2,8 @@
 
 Use `软著基础信息.zh.yaml` as the authoritative source for the software copyright registration application form. Do not invent registration fields from project code or screenshots when the YAML field is present.
 
+Source program line count is the one mapped field that may be normalized from generated evidence. Generate the source inventory and source code excerpt before the application form. If `登记信息.源程序总行数` is empty, fill it from the computed project-authored source program line count. If the user-filled value differs from the computed value, use the computed value in final materials and report the mismatch.
+
 If a mapped YAML value is empty:
 
 - if `生成设置.是否允许缺失字段标红待补充` is `true`, write red `待补充` in the generated material when the target document supports rich text;
@@ -64,9 +66,12 @@ The following mapped fields are usually checkbox/option fields in the registrati
 
 When editing the application form:
 
+- copy the bundled registration form template first and patch the copy in place;
+- preserve the original form tables, controls, row/column counts, page setup, and checkbox/option-marker layout;
 - if the template uses Word form fields or checkbox controls, set the corresponding control state;
 - if the template uses text such as `□ 原创 □ 修改`, replace only the selected option marker, for example `☑ 原创 □ 修改`;
 - if the template is legacy `.doc` and OpenXML cannot safely edit it, use Word COM on Windows and then save to the requested output format;
+- if no available tool can preserve the template structure, stop and report the blocker;
 - report any checkbox/option field that could not be reliably selected in `报告/生成结果报告.md`.
 
 ## Derived Or Supporting Mapping
@@ -86,6 +91,7 @@ When editing the application form:
 - `登记信息.软件全称` must match the application form, manual title/header, and source code excerpt header.
 - `登记信息.版本号` must match all final materials.
 - `登记信息.源程序总行数` must match the application form and source code excerpt policy/report.
+- The application form source program line count must match the normalized source count recorded in `报告/生成结果报告.md`.
 - `生成设置.源代码节选是否显示行号` must remain `false` unless the user documents a different legal/agency requirement.
 - `生成设置.源代码节选最低行数` must be at least `3200` unless the user documents a different legal/agency requirement.
 

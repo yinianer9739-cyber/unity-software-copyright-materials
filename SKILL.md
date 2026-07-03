@@ -78,7 +78,7 @@ Rules:
 
 - `输出/` contains only the three final files: 游戏软件说明书, 源代码节选, 计算机软件著作权登记申请表.
 - `报告/` contains support files such as 生成结果报告 and 验证报告.
-- screenshots are always read from `截图/`; do not ask the user to fill screenshot paths.
+- screenshots are always read from `截图/`; do not ask the user to fill screenshot paths. Never use images outside the user-selected package directory.
 - output path is always `输出/`; do not ask the user to fill output paths.
 - the YAML still requires `项目路径.Unity项目根目录`.
 - YAML template: `assets/templates/软著基础信息.zh.yaml`.
@@ -104,14 +104,16 @@ Before final generation, audit these five items. If any item is missing, inconsi
 5. After the user replies `已填好` or otherwise clearly confirms the YAML is filled, offer these ordered workflow actions:
 
    - `1. 直接生成软著资料`: use the current `截图/` directory.
-   - `2. 智能运行游戏并生成候选截图`: try to run the Unity project, explore the game flow, and capture candidate screenshots. If the target Unity project is already open, ask the user to set the Game View resolution before running this action.
+   - `2. 智能运行游戏并生成候选截图`: try to run the Unity project through Unity-internal automation, explore the game flow, and capture candidate screenshots. After the user chooses this action, ask them to choose one screenshot execution mode:
+     - `1. 创建临时工程副本自动截图`: recommended and slower. Do not take over the user's currently opened Unity instance; the user may continue normal computer work.
+     - `2. 接管当前 Unity 实例自动截图`: faster but risky. Require explicit confirmation: `我已保存 Unity 当前工作，并允许 Codex 接管当前 Unity 实例进行自动截图。`
    - `3. 自动识别项目内容并补充空字段`: if supported YAML fields are empty, infer suggested text from the Unity project, screenshots, and existing YAML fields.
 
    Tell the user they may reply with one action or an ordered sequence, for example `2,3,1` means first capture screenshots, then auto-fill empty fields, then generate final materials.
 
    If the user chooses automatic screenshots or auto-fill and `项目路径.Unity项目根目录` is empty, stop and ask the user to fill the Unity project root in YAML.
 
-   Automatic screenshot strategy is internal; do not add it to the user YAML except optional `截图设置` resolution/orientation fields. Follow `references/auto-screenshot-rules.md`.
+   Automatic screenshot strategy is internal; do not add it to the user YAML except optional `截图设置` resolution/orientation fields. Follow `references/auto-screenshot-rules.md`. Do not use OS mouse control or desktop screenshots as final automatic screenshot sources.
    Auto-fill strategy is internal; do not add it to the user YAML. Follow `references/auto-fill-rules.md`.
 
 6. Read `项目路径.Unity项目根目录` from YAML and analyze the Unity project:
@@ -126,9 +128,13 @@ Before final generation, audit these five items. If any item is missing, inconsi
    python3 <skill>/scripts/scan_screenshots.py --screenshots <package-dir>/截图 --out-dir <package-dir>/报告/02-截图清单
    ```
 
+   Screenshot source whitelist is mandatory: final material generation may only use image files whose resolved paths are under `<package-dir>/截图/`. External directories, copied-in guesses from unrelated workspaces, search results, caches, build folders, or screenshots outside the package are prohibited. If an image source cannot be traced to the package screenshot directory, stop and ask the user to place the image under `截图/`.
+
 8. Apply the mandatory audit gates. Pause when a gate has a high-risk warning unless the user explicitly confirms to continue.
 
-9. Generate materials from the templates. Use `docx-toolkit` or Word/OpenXML patching. The manual template intentionally contains only the title/header placeholders, TOC entries 1-7, and body headings 1-7. Generate all section 7 sub-sections dynamically from the screenshot directory and project evidence. See:
+9. Generate the source code excerpt before the registration application form. Count the project-authored source program lines from the source inventory, count the actual selected excerpt lines, and write both values to `报告/生成结果报告.md`. If `登记信息.源程序总行数` is empty, fill the normalized generation data with the computed source program line count before generating the application form. If it is present but differs from the computed value, use the computed value for final-material consistency and report the mismatch.
+
+10. Generate materials from the bundled templates in template-protection mode. First copy each bundled template into `<package-dir>/输出/`, then patch only placeholders, text runs, checkbox/option markers, and image insertion points inside the copied file. Do not rebuild DOC/DOCX files from scratch. Do not recreate, resize, reorder, or replace the registration-form tables. `docx-toolkit` may only be used for in-template patching. If the legacy `.doc` registration form cannot be safely patched while preserving structure, use Word COM on Windows; if that is unavailable, stop and report the blocker. See:
 
    - `references/workflow.md`
    - `references/auto-screenshot-rules.md`
@@ -138,13 +144,13 @@ Before final generation, audit these five items. If any item is missing, inconsi
    - `references/code-excerpt-rules.md`
    - `references/validation-rules.md`
 
-10. Verify outputs:
+11. Verify outputs:
 
    ```powershell
    python3 <skill>/scripts/verify_outputs.py --output-dir <package-dir>/输出 --report <package-dir>/报告/验证报告.md
    ```
 
-11. In the final reply, include clickable links to the three final files and support reports.
+12. In the final reply, include clickable links to the three final files and support reports.
 
 ## Hard Rules
 
@@ -153,6 +159,9 @@ Before final generation, audit these five items. If any item is missing, inconsi
 - Do not assume all Unity business code is Lua. Prefer real business code from C#, Lua, ToLua, or other project-specific scripts.
 - Exclude `.meta`, `Library`, `Temp`, build output, minified files, and third-party libraries unless the user explicitly requests them.
 - Code excerpts must not display line numbers and must include at least 3200 lines unless the user explicitly documents a different legal/agency requirement.
+- Automatic screenshots must be captured through Unity-internal automation such as a temporary Editor runner, current-instance Editor runner, GameView, Camera, RenderTexture, or project screenshot hook. Do not use OS mouse control or desktop/window screenshots as final automatic screenshot evidence.
+- When automatic screenshotting is requested, offer the two execution modes: temporary project copy (recommended, slower, user may keep using the computer) or current Unity instance takeover (faster, requires explicit confirmation and saved work).
+- Final materials may only use screenshots from the resolved `<package-dir>/截图/` tree. External image paths, screenshots found outside the package, symlink escapes, web images, caches, and unrelated project folders are prohibited.
 - Login/startup/entry screenshots must include a healthy-game notice or equivalent health/game announcement.
 - If the login/startup/entry screen includes account, password, registration, or start-game entries, the manual must explain them.
 - Try to include both battle exit and whole-app exit screenshots and explain the source entry for each.
@@ -162,10 +171,12 @@ Before final generation, audit these five items. If any item is missing, inconsi
 - Missing user-supplied fields may be written as red `待补充` when the form allows it.
 - Final material names, headers, and application form software name/version must be consistent.
 - Generate the registration application form from `软著基础信息.zh.yaml` according to `references/application-form-field-mapping.md`; do not treat the YAML as only manual-writing context.
+- Generate the application form after source analysis and source excerpt generation so the source program line count can be filled automatically and verified for consistency.
 - Do not require legal-team applicant identity fields in the YAML. They are intentionally excluded from technical pre-review and should be completed by legal staff.
 - Do not overwrite user-filled YAML text when auto-filling project overview, user analysis, core gameplay, main functions, function features, technical characteristics, or development purpose unless the user explicitly asks for rewriting.
 - Do not add fixed section 7 sub-sections to the manual template. Section 7 details are generated from the final screenshot directory.
 - Do not pre-fill the source code excerpt template with fixed modules. Generate code sections according to the screenshot-derived function list and real Unity project source code.
+- Use template-protection mode for all final Word files: copy bundled templates first, patch copies in place, and never reconstruct the registration form or its tables from a blank document.
 
 ## Output Layout
 
@@ -186,11 +197,14 @@ Use the user-selected materials package directory:
 
 ## When Editing DOCX/DOC
 
-Use the built-in `docx-toolkit` skill if available. For `.doc` application-form templates, use Word COM on Windows when needed, then save as `.doc` or `.docx` according to the user's requested final format.
+Use the built-in `docx-toolkit` skill only for template-preserving patching. For `.doc` application-form templates, use Word COM on Windows when needed, then save as `.doc` or `.docx` according to the user's requested final format. If preserving the original template structure cannot be guaranteed, stop instead of generating a replacement document.
 
 Always verify:
 
+- Final documents were created by copying bundled templates and patching the copies, not by reconstructing new documents.
+- The registration form table layout, controls, option markers, and row/column structure were preserved.
 - Comments and tracked revisions are removed from final `.docx` files.
 - Required screenshots are embedded.
 - Source code excerpt follows the user's line-number preference.
+- Source program line count is filled in the registration form and matches the generated source report/normalized data.
 - Code can be traced back to project files, unless the user explicitly documents an exception.

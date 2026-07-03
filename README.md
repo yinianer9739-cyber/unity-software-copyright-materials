@@ -70,7 +70,7 @@ unity-software-copyright-materials/
 
 ## 从 Release zip 安装
 
-从 GitHub Releases 下载对应版本包，例如 `unity-software-copyright-materials-v0.4.0.zip`，解压得到 `unity-software-copyright-materials/` 目录，并放到：
+从 GitHub Releases 下载对应版本包，例如 `unity-software-copyright-materials-v0.5.0.zip`，解压得到 `unity-software-copyright-materials/` 目录，并放到：
 
 ```text
 %USERPROFILE%\.codex\skills\unity-software-copyright-materials
@@ -85,10 +85,12 @@ unity-software-copyright-materials/
 3. Codex 创建或修复资料包目录结构；已有 YAML 不会被覆盖。
 4. 用户填写 `软著基础信息.zh.yaml`，并把功能截图放入 `截图/`。
 5. 用户确认 YAML 填完后，Codex 提供三个选择：直接生成、智能运行游戏生成候选截图后再生成，或自动补充技术特点/开发目的/主要功能后再生成。
-6. 如选择自动截图，Codex 读取 Unity 项目根目录，尝试从 `GameMain.unity` 运行游戏、探索流程、截取候选截图，并生成 `报告/自动截图报告.md`。
+6. 如选择自动截图，Codex 会要求用户选择“临时工程副本自动截图”或“接管当前 Unity 实例自动截图”。默认推荐临时副本模式；当前实例模式必须先保存工作并明确确认。
 7. Codex 分析项目源码，扫描 `截图/`，并审核固定风险项。
-8. Codex 基于模板生成三份正式材料到 `输出/`。
-9. Codex 生成辅助报告到 `报告/`，并在回答中给出可点击文件链接。
+8. Codex 只使用资料包 `截图/` 内的图片，外部图片禁止参与最终材料。
+9. Codex 复制技能自带 Word 模板后在副本内填充，不重建登记表或修改原始表格结构。
+10. Codex 生成源代码节选后统计代码行数，自动写入登记申请表并校验一致性。
+11. Codex 生成辅助报告到 `报告/`，并在回答中给出可点击文件链接。
 
 资料包结构：
 
@@ -118,6 +120,9 @@ unity-software-copyright-materials/
 - 截图中出现但未说明的按钮或入口，建议用户补充说明或删除该视觉元素。
 - 登记申请表必须按 `references/application-form-field-mapping.md` 从 `软著基础信息.zh.yaml` 写入字段；YAML 不只是说明书素材。
 - 法务主体/证件类字段不在 YAML 中填写，不参与技术预审核，由法务在登记表中完成。
+- 截图来源必须在资料包 `截图/` 内，不能使用资料包外、缓存、下载、其他项目或旧资料包中的图片。
+- 三份正式 Word 文件必须基于技能自带模板复制后填充，不能从空白文档重建，登记表表格结构必须保留。
+- 源程序总行数必须在源代码节选生成后自动统计并写入登记申请表，最终校验一致性。
 
 ## 智能自动截图
 
@@ -126,11 +131,15 @@ unity-software-copyright-materials/
 默认策略：
 
 - 从 YAML 的 `项目路径.Unity项目根目录` 读取 Unity 工程。
+- 用户可选择临时工程副本模式或当前 Unity 实例接管模式。
+- 临时工程副本模式较慢，但不会接管当前 Unity，用户可正常操作电脑。
+- 当前 Unity 实例接管模式较快，但会影响当前 Unity 状态，必须先保存工作并明确确认。
 - 优先查找并运行 `GameMain.unity`。
 - 尝试识别 UI 文本、按钮、场景状态和截图变化。
 - 优先捕获启动/入口、开始游戏、战斗过程、状态变化、结算、暂停/退出等截图。
 - 自动截图保存到 `截图/自动截图/`，不会覆盖用户手动截图。
 - 自动截图报告写入 `报告/自动截图报告.md`。
+- 自动截图必须来自 Unity 内部截图机制或项目截图 Hook，不使用系统鼠标控制或桌面截图作为正式截图来源。
 - 如果工程地址缺失、Unity 无法运行、找不到入口场景或截图质量不足，会提示用户手动补充截图。
 
 ## 自动补全文案
@@ -203,6 +212,9 @@ python3 scripts/verify_outputs.py --output-dir <package-dir>/输出 --report <pa
 - 登录/启动/入口截图应包含健康游戏公告或等效提示。
 - 如果截图里出现按钮或入口，说明书中应有对应说明。
 - 说明书、申请表、代码节选中的软件名称和版本应保持一致。
+- 最终材料只能使用资料包 `截图/` 内的图片。
+- 最终 Word 文件只能通过复制并填充技能模板生成，不能重建登记表表格。
+- 登记表中的源程序总行数必须与源码分析/代码节选报告一致。
 - 最终 `.docx` 文件应移除批注和修订痕迹。
 
 ## 许可证

@@ -15,6 +15,14 @@ HEALTH_NOTICE_KEYWORDS = ("健康", "公告", "适龄", "防沉迷", "health", "
 EXIT_KEYWORDS = ("退出", "exit", "quit", "return", "返回")
 
 
+def is_relative_to(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:
@@ -67,9 +75,21 @@ def main() -> None:
     if not screenshots.exists():
         raise SystemExit(f"Screenshot directory does not exist: {screenshots}")
 
+    screenshots_resolved = screenshots.resolve()
     items = []
+    rejected_external = []
     for path in sorted(screenshots.rglob("*")):
         if not path.is_file() or path.suffix.lower() not in IMAGE_EXTS:
+            continue
+        resolved = path.resolve()
+        if not is_relative_to(resolved, screenshots_resolved):
+            rejected_external.append(
+                {
+                    "file": path.relative_to(screenshots).as_posix(),
+                    "resolved_path": str(resolved),
+                    "reason": "resolved path is outside screenshot directory",
+                }
+            )
             continue
         size = image_size(path)
         items.append(
@@ -122,11 +142,15 @@ def main() -> None:
         if len(hp_change_items) < 2:
             confirmation_required.append("战斗模块缺失能体现战斗血量变化数据的连续截图，建议至少提供2张。")
         warnings.extend(confirmation_required)
+    if rejected_external:
+        warnings.append("检测到解析路径位于截图目录之外的图片，已拒绝使用。最终材料只能使用资料包“截图/”内的图片。")
 
     data = {
         "screenshot_dir": str(screenshots),
+        "screenshot_dir_resolved": str(screenshots_resolved),
         "count": len(items),
         "items": items,
+        "rejected_external": rejected_external,
         "warnings": warnings,
         "requires_user_confirmation": bool(confirmation_required),
         "confirmation_required": confirmation_required,
@@ -144,6 +168,11 @@ def main() -> None:
         lines.append("检测到战斗模块，但战斗截图材料不完整。生成正式材料前应先提醒用户补充以下截图，或由用户明确确认继续：")
         lines.extend(f"- {warning}" for warning in confirmation_required)
         lines.append("")
+    if rejected_external:
+        lines.extend(["## 已拒绝的外部图片", "", "| 文件 | 解析路径 | 原因 |", "|---|---|---|"])
+        for item in rejected_external:
+            lines.append(f"| {item['file']} | `{item['resolved_path']}` | {item['reason']} |")
+        lines.append("")
     lines.extend(["## 图片", "", "| 文件 | 尺寸 | 大小 | SHA-256 |", "|---|---:|---:|---|"])
     for item in items:
         dim = f"{item['width']}x{item['height']}" if item["width"] and item["height"] else "未识别"
@@ -157,6 +186,10 @@ def main() -> None:
         print("STOP_FOR_USER: 检测到战斗模块但战斗截图材料不完整。请先提醒用户补充缺失截图，或等待用户明确确认继续。")
         for warning in confirmation_required:
             print(f"- {warning}")
+    if rejected_external:
+        print("STOP_FOR_USER: 检测到解析路径位于截图目录之外的图片，已拒绝使用。请将需要的图片直接放入资料包的截图目录。")
+        for item in rejected_external:
+            print(f"- {item['file']} -> {item['resolved_path']}")
 
 
 if __name__ == "__main__":

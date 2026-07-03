@@ -44,7 +44,19 @@ If the remote `VERSION` is newer than local:
 
 ## Materials Package
 
-Ask the user to choose one materials package directory. If it is new, create it. If it already exists, repair missing directories and never overwrite an existing YAML file.
+The materials package directory is user-selected and is a non-negotiable workflow gate.
+
+Before creating or repairing any package content, ask the user to provide exactly one materials package directory. The directory may be a new directory or an existing directory. Do not invent, infer, or default this path from the current workspace, `outputs/`, the Unity project path, or any other location.
+
+If no user-selected package directory is known:
+
+- stop immediately after the version check;
+- ask the user for the materials package directory address;
+- do not create `软著基础信息.zh.yaml`;
+- do not create `截图/`, `输出/`, or `报告/`;
+- do not continue to YAML collection or generation choices.
+
+After the user provides the package directory, create it if it is new. If it already exists, repair missing directories and never overwrite an existing YAML file.
 
 ```powershell
 python3 <skill>/scripts/create_materials_package.py --package-dir <package-dir>
@@ -82,9 +94,10 @@ Before final generation, audit these five items. If any item is missing, inconsi
 ## Required Workflow
 
 1. Run the version check gate.
-2. Create or repair the materials package directory.
-3. Stop until the user fills `软著基础信息.zh.yaml` and places screenshots under `截图/`.
-4. After the user confirms YAML is filled, offer two choices:
+2. If the user has not provided a materials package directory in this conversation or resume checkpoint, stop and ask for the directory. Do not choose a default path.
+3. Create or repair the user-selected materials package directory.
+4. Stop until the user fills `软著基础信息.zh.yaml` and places screenshots under `截图/`. The stop message must include the exact package paths and this exact instruction: `填写完成后请回复：已填好`.
+5. After the user replies `已填好` or otherwise clearly confirms the YAML is filled, offer these three choices:
 
    - `1. 直接生成软著资料`: use the current `截图/` directory.
    - `2. 智能运行游戏并生成候选截图后再生成`: try to run the Unity project, explore the game flow, capture candidate screenshots, and then continue generation.
@@ -95,21 +108,21 @@ Before final generation, audit these five items. If any item is missing, inconsi
    Automatic screenshot strategy is internal; do not add it to the user YAML. Follow `references/auto-screenshot-rules.md`.
    Auto-fill strategy is internal; do not add it to the user YAML. Follow `references/auto-fill-rules.md`.
 
-5. Read `项目路径.Unity项目根目录` from YAML and analyze the Unity project:
+6. Read `项目路径.Unity项目根目录` from YAML and analyze the Unity project:
 
    ```powershell
    python3 <skill>/scripts/analyze_unity_project.py --project <Unity project root> --out-dir <package-dir>/报告/01-项目分析
    ```
 
-6. Scan screenshots:
+7. Scan screenshots:
 
    ```powershell
    python3 <skill>/scripts/scan_screenshots.py --screenshots <package-dir>/截图 --out-dir <package-dir>/报告/02-截图清单
    ```
 
-7. Apply the mandatory audit gates. Pause when a gate has a high-risk warning unless the user explicitly confirms to continue.
+8. Apply the mandatory audit gates. Pause when a gate has a high-risk warning unless the user explicitly confirms to continue.
 
-8. Generate materials from the templates. Use `docx-toolkit` or Word/OpenXML patching. The manual template intentionally contains only the title/header placeholders, TOC entries 1-7, and body headings 1-7. Generate all section 7 sub-sections dynamically from the screenshot directory and project evidence. See:
+9. Generate materials from the templates. Use `docx-toolkit` or Word/OpenXML patching. The manual template intentionally contains only the title/header placeholders, TOC entries 1-7, and body headings 1-7. Generate all section 7 sub-sections dynamically from the screenshot directory and project evidence. See:
 
    - `references/workflow.md`
    - `references/auto-screenshot-rules.md`
@@ -119,16 +132,18 @@ Before final generation, audit these five items. If any item is missing, inconsi
    - `references/code-excerpt-rules.md`
    - `references/validation-rules.md`
 
-9. Verify outputs:
+10. Verify outputs:
 
    ```powershell
    python3 <skill>/scripts/verify_outputs.py --output-dir <package-dir>/输出 --report <package-dir>/报告/验证报告.md
    ```
 
-10. In the final reply, include clickable links to the three final files and support reports.
+11. In the final reply, include clickable links to the three final files and support reports.
 
 ## Hard Rules
 
+- Never create or repair a materials package before the user provides the package directory. Do not use default paths such as the current workspace, `outputs/`, or the Unity project directory.
+- After creating or repairing the user-selected package, always stop and tell the user to fill `软著基础信息.zh.yaml`, place screenshots under `截图/`, and reply exactly `已填好` when finished.
 - Do not assume all Unity business code is Lua. Prefer real business code from C#, Lua, ToLua, or other project-specific scripts.
 - Exclude `.meta`, `Library`, `Temp`, build output, minified files, and third-party libraries unless the user explicitly requests them.
 - Code excerpts must not display line numbers and must include at least 3200 lines unless the user explicitly documents a different legal/agency requirement.

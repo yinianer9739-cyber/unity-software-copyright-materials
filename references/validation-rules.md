@@ -29,8 +29,8 @@ For `.docx` files:
 
 ## Manual Checks
 
-- healthy-game notice is represented in login section or unresolved warning is reported;
-- login account/password/register/start-game entries are explained when relevant;
+- healthy-game notice is represented in login/startup/entry section or unresolved warning is reported;
+- login/startup/entry account/password/register/start-game entries are explained when relevant;
 - battle exit and whole-app exit are either included or reported as missing/recommended;
 - unresolved fields are listed.
 
@@ -39,4 +39,6 @@ For `.docx` files:
 - registration application form fields follow `references/application-form-field-mapping.md`;
 - empty mapped YAML fields are either written as `待补充` according to the YAML setting or block generation;
 - `报告/生成结果报告.md` lists every unresolved mapped application-form field;
-- software full name, version, copyright owner, and source program line count match the YAML and all final materials.
+- software full name, version, and source program line count match the YAML and all final materials.
+- legal-team applicant identity fields are not treated as missing YAML fields during technical pre-review.
+- checkbox/option fields are selected according to `references/application-form-field-mapping.md`, or any failed selection is reported in `报告/生成结果报告.md`.

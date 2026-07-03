@@ -30,30 +30,41 @@ Do not ask the user to fill screenshot or output paths. Those are derived from t
 
 Do not ask the user to fill code-function mapping tables unless the project evidence is insufficient.
 
+After the user confirms the YAML is filled, offer two choices:
+
+1. Directly generate software copyright materials from the current `截图/` directory.
+2. Intelligently run the Unity game, generate candidate screenshots, then generate materials.
+3. Auto-fill technical characteristics, development purpose, and main functions if they are empty, then generate materials.
+
+If the user chooses automatic screenshots or auto-fill and `项目路径.Unity项目根目录` is empty, stop and ask the user to fill the Unity project root in YAML. Keep automatic screenshot and auto-fill strategy internal; do not expose those details in the YAML.
+
 ## Generation Stages
 
 1. Run version check and stop for restart if an update is applied.
 2. Create or repair the package directory.
 3. Read and normalize the package YAML.
-3. Analyze Unity project code and produce a candidate source inventory.
-4. Scan `<package-dir>/截图/` and produce a screenshot inventory under `<package-dir>/报告/`.
-5. Apply the mandatory audit gates and pause on high-risk gaps.
-6. Draft a short generation plan that maps YAML fields and screenshots to the three templates.
-7. Patch the three template materials into `<package-dir>/输出/`:
+4. Offer direct generation, intelligent automatic screenshotting, or automatic text completion.
+5. If automatic screenshotting is chosen, follow `references/auto-screenshot-rules.md` and write `报告/自动截图报告.md`.
+6. If auto-fill is chosen, follow `references/auto-fill-rules.md`; do not overwrite user-filled text.
+7. Analyze Unity project code and produce a candidate source inventory.
+8. Scan `<package-dir>/截图/` and produce a screenshot inventory under `<package-dir>/报告/`.
+9. Apply the mandatory audit gates and pause on high-risk gaps.
+10. Draft a short generation plan that maps YAML fields and screenshots to the three templates.
+11. Patch the three template materials into `<package-dir>/输出/`:
    - game software manual;
    - source code excerpt;
    - software copyright registration application form.
-8. For the registration application form, apply `references/application-form-field-mapping.md` and report every unresolved mapped field.
-9. Verify and write support reports under `<package-dir>/报告/`.
-10. Reply with clickable links to the three final files and both support reports.
+12. For the registration application form, apply `references/application-form-field-mapping.md` and report every unresolved mapped field.
+13. Verify and write support reports under `<package-dir>/报告/`.
+14. Reply with clickable links to the three final files and both support reports.
 
 ## Mandatory Audit Gates
 
 Audit these five items before final generation. If any item is missing, inconsistent, or likely non-compliant, warn the user that the material may fail review and recommend updating the material before continuing.
 
 1. Code excerpts must not display line numbers, and the source code excerpt must include at least 3200 lines.
-2. Login screen must include a healthy-game notice or equivalent health/game announcement.
-3. If account, password, registration, or start-game entries appear on the login screen, explain them in the manual.
+2. Login/startup/entry screen must include a healthy-game notice or equivalent health/game announcement.
+3. If account, password, registration, or start-game entries appear on the login/startup/entry screen, explain them in the manual.
 4. Recommend providing both battle-exit and whole-app-exit screenshots, plus the source entry or operation for each.
 5. If a screenshot shows an unexplained button or entry, recommend adding an explanation or removing that visual element from the screenshot.
 
@@ -82,6 +93,7 @@ Stop for user confirmation when:
 - package YAML is missing or has not been filled;
 - Unity project root is missing or does not look like a Unity project;
 - screenshot directory is missing or empty;
+- the user chose automatic screenshots or auto-fill but Unity project root is missing;
 - required application fields are empty and the user does not allow red `待补充`;
 - any mandatory audit gate has a high-risk warning and the user has not confirmed how to proceed;
 - a screenshot contains visible entries that are not covered by the manual and the intended handling is unclear.

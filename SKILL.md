@@ -74,8 +74,8 @@ Rules:
 Before final generation, audit these five items. If any item is missing, inconsistent, or likely non-compliant, warn the user that the material may fail review and recommend updating the material before continuing.
 
 1. Code excerpts must not display line numbers, and the source code excerpt must include at least 3200 lines.
-2. The login screen must include a healthy-game notice or equivalent health/game announcement.
-3. If account, password, registration, or start-game entries appear on the login screen, the manual must explain them.
+2. The login/startup/entry screen must include a healthy-game notice or equivalent health/game announcement.
+3. If account, password, registration, or start-game entries appear on the login/startup/entry screen, the manual must explain them.
 4. Recommend providing both battle-exit and whole-app-exit screenshots, plus the source entry or operation for each.
 5. If a screenshot shows a button or entry not explained in the manual, recommend adding an explanation or removing that visual element from the screenshot.
 
@@ -84,49 +84,64 @@ Before final generation, audit these five items. If any item is missing, inconsi
 1. Run the version check gate.
 2. Create or repair the materials package directory.
 3. Stop until the user fills `软著基础信息.zh.yaml` and places screenshots under `截图/`.
-4. Read `项目路径.Unity项目根目录` from YAML and analyze the Unity project:
+4. After the user confirms YAML is filled, offer two choices:
+
+   - `1. 直接生成软著资料`: use the current `截图/` directory.
+   - `2. 智能运行游戏并生成候选截图后再生成`: try to run the Unity project, explore the game flow, capture candidate screenshots, and then continue generation.
+   - `3. 自动补充技术特点、开发目的、主要功能后再生成`: if these YAML fields are empty, infer suggested text from the Unity project, screenshots, and existing YAML fields, then continue generation.
+
+   If the user chooses automatic screenshots or auto-fill and `项目路径.Unity项目根目录` is empty, stop and ask the user to fill the Unity project root in YAML.
+
+   Automatic screenshot strategy is internal; do not add it to the user YAML. Follow `references/auto-screenshot-rules.md`.
+   Auto-fill strategy is internal; do not add it to the user YAML. Follow `references/auto-fill-rules.md`.
+
+5. Read `项目路径.Unity项目根目录` from YAML and analyze the Unity project:
 
    ```powershell
    python3 <skill>/scripts/analyze_unity_project.py --project <Unity project root> --out-dir <package-dir>/报告/01-项目分析
    ```
 
-5. Scan screenshots:
+6. Scan screenshots:
 
    ```powershell
    python3 <skill>/scripts/scan_screenshots.py --screenshots <package-dir>/截图 --out-dir <package-dir>/报告/02-截图清单
    ```
 
-6. Apply the mandatory audit gates. Pause when a gate has a high-risk warning unless the user explicitly confirms to continue.
+7. Apply the mandatory audit gates. Pause when a gate has a high-risk warning unless the user explicitly confirms to continue.
 
-7. Generate materials from the templates. Use `docx-toolkit` or Word/OpenXML patching. The manual template intentionally contains only the title/header placeholders, TOC entries 1-7, and body headings 1-7. Generate all section 7 sub-sections dynamically from the screenshot directory and project evidence. See:
+8. Generate materials from the templates. Use `docx-toolkit` or Word/OpenXML patching. The manual template intentionally contains only the title/header placeholders, TOC entries 1-7, and body headings 1-7. Generate all section 7 sub-sections dynamically from the screenshot directory and project evidence. See:
 
    - `references/workflow.md`
+   - `references/auto-screenshot-rules.md`
+   - `references/auto-fill-rules.md`
    - `references/application-form-field-mapping.md`
    - `references/manual-and-application-rules.md`
    - `references/code-excerpt-rules.md`
    - `references/validation-rules.md`
 
-8. Verify outputs:
+9. Verify outputs:
 
    ```powershell
    python3 <skill>/scripts/verify_outputs.py --output-dir <package-dir>/输出 --report <package-dir>/报告/验证报告.md
    ```
 
-9. In the final reply, include clickable links to the three final files and support reports.
+10. In the final reply, include clickable links to the three final files and support reports.
 
 ## Hard Rules
 
 - Do not assume all Unity business code is Lua. Prefer real business code from C#, Lua, ToLua, or other project-specific scripts.
 - Exclude `.meta`, `Library`, `Temp`, build output, minified files, and third-party libraries unless the user explicitly requests them.
 - Code excerpts must not display line numbers and must include at least 3200 lines unless the user explicitly documents a different legal/agency requirement.
-- Login screenshots must include a healthy-game notice or equivalent health/game announcement.
-- If the login screen includes account, password, registration, or start-game entries, the manual must explain them.
+- Login/startup/entry screenshots must include a healthy-game notice or equivalent health/game announcement.
+- If the login/startup/entry screen includes account, password, registration, or start-game entries, the manual must explain them.
 - Try to include both battle exit and whole-app exit screenshots and explain the source entry for each.
 - If a battle module exists, check before final generation whether victory, failure, and battle HP/blood-bar change screenshots are missing. If any are missing, tell the user what is missing, recommend supplementing it, and wait for user confirmation before output.
 - If a screenshot shows a button or entry that the manual does not explain, warn the user that legal review may ask them to add explanation or remove the visual element.
 - Missing user-supplied fields may be written as red `待补充` when the form allows it.
 - Final material names, headers, and application form software name/version must be consistent.
 - Generate the registration application form from `软著基础信息.zh.yaml` according to `references/application-form-field-mapping.md`; do not treat the YAML as only manual-writing context.
+- Do not require legal-team applicant identity fields in the YAML. They are intentionally excluded from technical pre-review and should be completed by legal staff.
+- Do not overwrite user-filled YAML text when auto-filling technical characteristics, development purpose, or main functions unless the user explicitly asks for rewriting.
 - Do not add fixed section 7 sub-sections to the manual template. Section 7 details are generated from the final screenshot directory.
 - Do not pre-fill the source code excerpt template with fixed modules. Generate code sections according to the screenshot-derived function list and real Unity project source code.
 

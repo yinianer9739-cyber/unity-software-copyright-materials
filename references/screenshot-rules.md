@@ -18,7 +18,7 @@ Scan image files and write:
 Warn when:
 
 - no screenshot looks like a login screenshot;
-- no login screenshot filename or user evidence indicates a healthy-game notice or equivalent health/game announcement;
+- no login/startup/entry screenshot filename or user evidence indicates a healthy-game notice or equivalent health/game announcement;
 - no screenshot filename suggests exit, quit, or return;
 - no screenshot filename suggests battle/combat;
 - the user says login exists but no login image appears.

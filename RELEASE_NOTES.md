@@ -1,5 +1,17 @@
 # Release Notes
 
+## v0.4.0
+
+### Changed
+
+- Updated `VERSION` to `0.4.0`.
+- Removed legal-team applicant identity fields from the user YAML template; these are now documented as legal-team fields outside technical pre-review.
+- Added default YAML values for common registration and development/runtime environment fields.
+- Changed industry/domain default to `游戏`.
+- Added optional auto-fill workflow for technical characteristics, development purpose, and main functions when those fields are empty.
+- Added application-form checkbox/option handling rules for registration fields such as software category, development method, software statement, publication status, rights acquisition, and rights scope.
+- Release artifacts are now generated under ignored `release/` as versioned zip files instead of `latest` zip files.
+
 ## v0.3.0
 
 ### Added
@@ -11,6 +23,7 @@
 - Added `scripts/check_version_and_update.py` to compare local and remote `VERSION`, write an update checkpoint, update from GitHub, and stop for client restart.
 - Added mandatory audit gates for line-number-free 3200+ line code excerpts, healthy-game login notice, login-entry explanations, exit screenshots, and unexplained screenshot UI entries.
 - Added explicit YAML-to-registration-application-form field mapping without changing the `0.3.0` version number.
+- Added internal optional intelligent Unity auto-screenshot workflow after YAML completion, without adding auto-screenshot settings to the user YAML.
 
 ### Changed
 

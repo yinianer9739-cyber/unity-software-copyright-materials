@@ -40,6 +40,8 @@ unity-software-copyright-materials/
       计算机软件著作权登记申请表模板.doc
   references/
     workflow.md
+    auto-screenshot-rules.md
+    auto-fill-rules.md
     application-form-field-mapping.md
     unity-project-analysis.md
     screenshot-rules.md
@@ -66,15 +68,15 @@ unity-software-copyright-materials/
 
 复制后重启 Codex，使 skill 被重新发现。
 
-## 从 latest zip 安装
+## 从 Release zip 安装
 
-从 GitHub Releases 下载 `unity-software-copyright-materials-latest.zip` 后，解压得到 `unity-software-copyright-materials/` 目录，并放到：
+从 GitHub Releases 下载对应版本包，例如 `unity-software-copyright-materials-v0.4.0.zip`，解压得到 `unity-software-copyright-materials/` 目录，并放到：
 
 ```text
 %USERPROFILE%\.codex\skills\unity-software-copyright-materials
 ```
 
-发布 zip 应包含 `SKILL.md`、`README.md`、`LICENSE`、`RELEASE_NOTES.md`、`agents/`、`assets/`、`references/` 和 `scripts/`，不需要包含 `.git/` 或本地生成的输出材料。
+发布 zip 应包含 `SKILL.md`、`VERSION`、`README.md`、`LICENSE`、`RELEASE_NOTES.md`、`agents/`、`assets/`、`references/` 和 `scripts/`，不需要包含 `.git/`、`release/` 或本地生成的输出材料。
 
 ## 资料包工作流
 
@@ -82,10 +84,11 @@ unity-software-copyright-materials/
 2. Codex 检查线上 `VERSION`，如有新版则自动更新本地 skill，写入断点并提示重启。
 3. Codex 创建或修复资料包目录结构；已有 YAML 不会被覆盖。
 4. 用户填写 `软著基础信息.zh.yaml`，并把功能截图放入 `截图/`。
-5. Codex 读取 YAML 中的 Unity 项目根目录，分析项目源码。
-6. Codex 扫描 `截图/`，并审核固定风险项。
-7. Codex 基于模板生成三份正式材料到 `输出/`。
-8. Codex 生成辅助报告到 `报告/`，并在回答中给出可点击文件链接。
+5. 用户确认 YAML 填完后，Codex 提供三个选择：直接生成、智能运行游戏生成候选截图后再生成，或自动补充技术特点/开发目的/主要功能后再生成。
+6. 如选择自动截图，Codex 读取 Unity 项目根目录，尝试从 `GameMain.unity` 运行游戏、探索流程、截取候选截图，并生成 `报告/自动截图报告.md`。
+7. Codex 分析项目源码，扫描 `截图/`，并审核固定风险项。
+8. Codex 基于模板生成三份正式材料到 `输出/`。
+9. Codex 生成辅助报告到 `报告/`，并在回答中给出可点击文件链接。
 
 资料包结构：
 
@@ -109,11 +112,39 @@ unity-software-copyright-materials/
 生成材料前必须审核以下事项。不满足时应提醒用户可能过不了审，并建议更新材料：
 
 - 代码不显示行号，源代码节选不少于 3200 行。
-- 登录界面必须包含健康游戏公告或等效提示。
+- 登录/启动/入口界面必须包含健康游戏公告或等效提示。
 - 如果有账号、密码、注册、开始游戏入口，需要在说明书中对应说明。
 - 建议提供退出战斗和退出整个 APP 的截图与说明来源。
 - 截图中出现但未说明的按钮或入口，建议用户补充说明或删除该视觉元素。
 - 登记申请表必须按 `references/application-form-field-mapping.md` 从 `软著基础信息.zh.yaml` 写入字段；YAML 不只是说明书素材。
+- 法务主体/证件类字段不在 YAML 中填写，不参与技术预审核，由法务在登记表中完成。
+
+## 智能自动截图
+
+自动截图是可选增强流程，不需要用户在 YAML 里填写额外策略。用户确认 YAML 填完后，可以选择让 Codex 尝试运行 Unity 游戏并自动生成候选截图。
+
+默认策略：
+
+- 从 YAML 的 `项目路径.Unity项目根目录` 读取 Unity 工程。
+- 优先查找并运行 `GameMain.unity`。
+- 尝试识别 UI 文本、按钮、场景状态和截图变化。
+- 优先捕获启动/入口、开始游戏、战斗过程、状态变化、结算、暂停/退出等截图。
+- 自动截图保存到 `截图/自动截图/`，不会覆盖用户手动截图。
+- 自动截图报告写入 `报告/自动截图报告.md`。
+- 如果工程地址缺失、Unity 无法运行、找不到入口场景或截图质量不足，会提示用户手动补充截图。
+
+## 自动补全文案
+
+自动补全文案是可选增强流程，不需要用户在 YAML 里填写额外策略。用户确认 YAML 填完后，可以选择让 Codex 在 `技术特点`、`开发目的`、`主要功能` 为空时，根据 Unity 工程、截图清单和已填写 YAML 自动生成建议文本。
+
+规则：
+
+- 需要填写 `项目路径.Unity项目根目录`。
+- 只补空字段，不覆盖用户已填写内容。
+- `技术特点` 控制在 50-100 字。
+- `开发目的` 控制在 50 字以内。
+- `主要功能` 控制在 500-1300 字。
+- 自动补全文案会记录到 `报告/生成结果报告.md`，正式提交前建议人工复核。
 
 ## 常用脚本
 
@@ -169,7 +200,7 @@ python3 scripts/verify_outputs.py --output-dir <package-dir>/输出 --report <pa
 - 优先使用真实项目源码作为代码节选来源。
 - 排除 `.meta`、`Library`、`Temp`、构建输出、压缩混淆文件和第三方库。
 - 代码不显示行号，源代码节选不少于 3200 行。
-- 登录截图应包含健康游戏公告或等效提示。
+- 登录/启动/入口截图应包含健康游戏公告或等效提示。
 - 如果截图里出现按钮或入口，说明书中应有对应说明。
 - 说明书、申请表、代码节选中的软件名称和版本应保持一致。
 - 最终 `.docx` 文件应移除批注和修订痕迹。

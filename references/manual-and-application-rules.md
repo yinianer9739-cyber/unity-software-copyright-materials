@@ -2,8 +2,8 @@
 
 ## Required Manual Checks
 
-- Login screen must include a healthy-game notice or equivalent health/game announcement.
-- If account, password, registration, or start-game entries appear on the login screen, explain them in the manual.
+- Login/startup/entry screen must include a healthy-game notice or equivalent health/game announcement. If the PC game has no login or registration, treat the startup or start-game entry screen as the login-equivalent audit screen.
+- If account, password, registration, or start-game entries appear on the login/startup/entry screen, explain them in the manual.
 - Try to include battle exit and whole-app exit. Explain the source entry for both, such as a battle exit button, main screen exit button, settings button, or mobile back key.
 - When a battle module exists, confirm before final output that the screenshot set includes victory result, failure result, and battle HP/blood-bar change screenshots. If any are missing, pause and ask the user whether to supplement or continue.
 - Screenshots should match the final project version supplied by the user.
@@ -34,7 +34,6 @@ Use the package YAML as the source for the registration application form. Follow
 
 - software full name, short name, version;
 - classification, development completion date, development method;
-- copyright owner fields;
 - hardware/software environment;
 - programming languages;
 - source program line count;
@@ -45,12 +44,15 @@ Use the package YAML as the source for the registration application form. Follow
 
 If the YAML allows missing values, write red `待补充` in final documents for unresolved fields. Report every unresolved field in `报告/生成结果报告.md`.
 
+Legal-team applicant identity fields, such as copyright owner name, owner type, country/region, province/city, certificate type, and certificate number, are intentionally excluded from the technical YAML and should be completed by legal staff. Do not block technical pre-review because these fields are absent from YAML.
+
+For checkbox/option fields such as software classification, development method, software statement, publication status, rights acquisition, and rights scope, select the corresponding option in the application form. Do not merely append the selected value as plain text if the template uses checkboxes or option markers.
+
 ## Consistency
 
 The following must match across all final materials:
 
 - software full name;
 - version;
-- copyright owner where shown;
 - source program line count where shown;
 - page/line-number policy for source code excerpt.

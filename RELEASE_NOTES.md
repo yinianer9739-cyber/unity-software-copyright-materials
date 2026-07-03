@@ -1,5 +1,13 @@
 # Release Notes
 
+## v0.4.1
+
+### Changed
+
+- Updated `VERSION` to `0.4.1`.
+- Made the user-selected materials package directory a hard workflow gate: the assistant must not default to `outputs/`, the current workspace, or the Unity project directory.
+- Required the post-package setup reminder to tell the user to fill `软著基础信息.zh.yaml`, place screenshots under `截图/`, and reply `已填好` before generation choices are offered.
+
 ## v0.4.0
 
 ### Changed

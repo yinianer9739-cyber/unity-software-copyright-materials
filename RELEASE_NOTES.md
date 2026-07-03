@@ -1,5 +1,19 @@
 # Release Notes
 
+## v0.4.2
+
+### Changed
+
+- Updated `VERSION` to `0.4.2`.
+- Expanded skill trigger wording for `软著`, `生成软著`, and `启动软著技能`; broad ambiguous requests should confirm whether to start the generation workflow.
+- Clarified package setup messaging so users may place existing screenshots immediately or wait for the later automatic screenshot workflow.
+- Reworked post-YAML choices into ordered actions such as `2,3,1`, separating automatic screenshotting, auto-fill, and final generation.
+- Expanded auto-fill coverage to include game overview, user analysis, core gameplay, function features, development purpose, main functions, and technical characteristics.
+- Added optional YAML screenshot settings for automatic screenshot resolution and screen orientation.
+- Updated automatic screenshot rules to prefer an already-open target Unity instance and preserve the user's Game View resolution; new Unity instances default to `720x1280` portrait or `1280x720` landscape.
+- Strengthened automatic screenshot coverage for obvious clickable entries, second-level/switchable interfaces, and both victory and failure settlement screenshots when battle outcomes support them.
+- Strengthened pre-generation audit rules for missing clickable-interface screenshots and missing victory/failure settlement screenshots.
+
 ## v0.4.1
 
 ### Changed

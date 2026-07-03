@@ -5,16 +5,20 @@ Use this optional internal workflow after the user confirms `软著基础信息.
 Offer this as the third user choice:
 
 ```text
-3. 自动补充技术特点、开发目的、主要功能后再生成
-如果这些字段为空，我会读取 Unity 工程内容，结合已填写信息、源码模块和截图信息生成建议文本。该选项需要 YAML 中已填写 Unity 项目根目录。
+3. 自动识别项目内容并补充空字段
+如果支持的项目说明字段为空，我会读取 Unity 工程内容，结合已填写信息、源码模块和截图信息生成建议文本。该选项需要 YAML 中已填写 Unity 项目根目录。
 ```
 
 If `项目路径.Unity项目根目录` is empty, stop and ask the user to fill it before auto-filling.
 
 ## Fields
 
-Auto-fill only fields that are empty:
+Auto-fill only fields that are empty. Treat template placeholder text such as `请填写...` and a `功能特点` list containing only an empty string as empty.
 
+- `项目说明.游戏概述`: 200-400 Chinese characters;
+- `项目说明.用户分析`: 100-200 Chinese characters;
+- `项目说明.核心玩法`: 150-300 Chinese characters;
+- `项目说明.功能特点`: 4-8 items, each 50-100 Chinese characters;
 - `项目说明.技术特点`: 50-100 Chinese characters;
 - `项目说明.开发目的`: 50 Chinese characters or fewer;
 - `项目说明.主要功能`: 500-1300 Chinese characters.
@@ -36,7 +40,15 @@ Use available evidence in this order:
 
 `项目说明.开发目的` should be concise and business-neutral, for example providing a high-quality game experience, entertainment, relaxation, and online game service. Avoid advertising language and exaggerated claims.
 
+`项目说明.游戏概述` should describe the game background, product type, entry flow, and what the user mainly does after entering the game. It should be understandable to legal reviewers and ordinary users, not written as engineering documentation.
+
+`项目说明.用户分析` should describe target users, usage scenarios, and suitable player types. Avoid claims about age groups or regulated demographics unless the YAML or project evidence supports them.
+
+`项目说明.核心玩法` should describe the main play loop, such as entry, preparation, growth, battle/gameplay, reward, and return to the main flow.
+
 `项目说明.主要功能` should be written for the registration application form. It should cover the user-visible software functions that can be supported by screenshots and project evidence, such as startup entry, main screen, gameplay/battle, role or item systems, score/reward/settlement, settings, pause, return, and exit.
+
+`项目说明.功能特点` should be written as concrete feature bullets. Each bullet should match project evidence or screenshots, such as startup flow, battle interaction, card/growth, reward/settlement, ranking, resource loading, or platform adaptation. Do not fill it with generic marketing slogans.
 
 ## Reporting
 

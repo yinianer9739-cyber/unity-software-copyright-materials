@@ -1,6 +1,6 @@
 ---
 name: unity-software-copyright-materials
-description: Use when generating or revising Chinese software copyright materials for Unity game projects, including 软著材料, 游戏软件说明书, 源代码节选, 计算机软件著作权登记申请表, C#, Lua, ToLua, or hot-update game projects.
+description: Use when the user mentions 软著, 生成软著, 启动软著技能, software copyright materials, 游戏软件说明书, 源代码节选, 计算机软件著作权登记申请表, or Unity/C#/Lua game copyright submission materials.
 ---
 
 # Unity 游戏软著材料生成
@@ -17,6 +17,8 @@ Use this skill for Unity game software copyright materials. It is package-driven
   - `assets/templates/游戏软件说明书模板.docx`
   - `assets/templates/源代码节选模板.docx`
   - `assets/templates/计算机软件著作权登记申请表模板.doc`
+
+If the user only says a broad keyword such as `软著` and it is unclear whether they want to generate materials, ask whether to start the software copyright generation workflow before creating or editing package content.
 
 ## Version Check Gate
 
@@ -90,22 +92,26 @@ Before final generation, audit these five items. If any item is missing, inconsi
 3. If account, password, registration, or start-game entries appear on the login/startup/entry screen, the manual must explain them.
 4. Recommend providing both battle-exit and whole-app-exit screenshots, plus the source entry or operation for each.
 5. If a screenshot shows a button or entry not explained in the manual, recommend adding an explanation or removing that visual element from the screenshot.
+6. If screenshots or automatic exploration reveal obvious clickable entries, second-level screens, or switchable tabs, require corresponding screenshots or documented skip reasons.
+7. If the battle module has both victory and failure outcomes, require both victory settlement and failure settlement screenshots or a documented reason one outcome could not be reached.
 
 ## Required Workflow
 
 1. Run the version check gate.
 2. If the user has not provided a materials package directory in this conversation or resume checkpoint, stop and ask for the directory. Do not choose a default path.
 3. Create or repair the user-selected materials package directory.
-4. Stop until the user fills `软著基础信息.zh.yaml` and places screenshots under `截图/`. The stop message must include the exact package paths and this exact instruction: `填写完成后请回复：已填好`.
-5. After the user replies `已填好` or otherwise clearly confirms the YAML is filled, offer these three choices:
+4. Stop until the user fills `软著基础信息.zh.yaml` and optionally places screenshots under `截图/`. Tell the user they may place existing screenshots now, or wait and choose the later automatic screenshot workflow. The stop message must include the exact package paths and this exact instruction: `填写完成后请回复：已填好`.
+5. After the user replies `已填好` or otherwise clearly confirms the YAML is filled, offer these ordered workflow actions:
 
    - `1. 直接生成软著资料`: use the current `截图/` directory.
-   - `2. 智能运行游戏并生成候选截图后再生成`: try to run the Unity project, explore the game flow, capture candidate screenshots, and then continue generation.
-   - `3. 自动补充技术特点、开发目的、主要功能后再生成`: if these YAML fields are empty, infer suggested text from the Unity project, screenshots, and existing YAML fields, then continue generation.
+   - `2. 智能运行游戏并生成候选截图`: try to run the Unity project, explore the game flow, and capture candidate screenshots. If the target Unity project is already open, ask the user to set the Game View resolution before running this action.
+   - `3. 自动识别项目内容并补充空字段`: if supported YAML fields are empty, infer suggested text from the Unity project, screenshots, and existing YAML fields.
+
+   Tell the user they may reply with one action or an ordered sequence, for example `2,3,1` means first capture screenshots, then auto-fill empty fields, then generate final materials.
 
    If the user chooses automatic screenshots or auto-fill and `项目路径.Unity项目根目录` is empty, stop and ask the user to fill the Unity project root in YAML.
 
-   Automatic screenshot strategy is internal; do not add it to the user YAML. Follow `references/auto-screenshot-rules.md`.
+   Automatic screenshot strategy is internal; do not add it to the user YAML except optional `截图设置` resolution/orientation fields. Follow `references/auto-screenshot-rules.md`.
    Auto-fill strategy is internal; do not add it to the user YAML. Follow `references/auto-fill-rules.md`.
 
 6. Read `项目路径.Unity项目根目录` from YAML and analyze the Unity project:
@@ -143,7 +149,7 @@ Before final generation, audit these five items. If any item is missing, inconsi
 ## Hard Rules
 
 - Never create or repair a materials package before the user provides the package directory. Do not use default paths such as the current workspace, `outputs/`, or the Unity project directory.
-- After creating or repairing the user-selected package, always stop and tell the user to fill `软著基础信息.zh.yaml`, place screenshots under `截图/`, and reply exactly `已填好` when finished.
+- After creating or repairing the user-selected package, always stop and tell the user to fill `软著基础信息.zh.yaml`, optionally place existing screenshots under `截图/`, or wait for the later automatic screenshot workflow, and reply exactly `已填好` when finished.
 - Do not assume all Unity business code is Lua. Prefer real business code from C#, Lua, ToLua, or other project-specific scripts.
 - Exclude `.meta`, `Library`, `Temp`, build output, minified files, and third-party libraries unless the user explicitly requests them.
 - Code excerpts must not display line numbers and must include at least 3200 lines unless the user explicitly documents a different legal/agency requirement.
@@ -151,12 +157,13 @@ Before final generation, audit these five items. If any item is missing, inconsi
 - If the login/startup/entry screen includes account, password, registration, or start-game entries, the manual must explain them.
 - Try to include both battle exit and whole-app exit screenshots and explain the source entry for each.
 - If a battle module exists, check before final generation whether victory, failure, and battle HP/blood-bar change screenshots are missing. If any are missing, tell the user what is missing, recommend supplementing it, and wait for user confirmation before output.
+- If obvious clickable entries, second-level screens, or switchable tabs appear in screenshots or automatic exploration, require corresponding interface screenshots or document why they were skipped before final output.
 - If a screenshot shows a button or entry that the manual does not explain, warn the user that legal review may ask them to add explanation or remove the visual element.
 - Missing user-supplied fields may be written as red `待补充` when the form allows it.
 - Final material names, headers, and application form software name/version must be consistent.
 - Generate the registration application form from `软著基础信息.zh.yaml` according to `references/application-form-field-mapping.md`; do not treat the YAML as only manual-writing context.
 - Do not require legal-team applicant identity fields in the YAML. They are intentionally excluded from technical pre-review and should be completed by legal staff.
-- Do not overwrite user-filled YAML text when auto-filling technical characteristics, development purpose, or main functions unless the user explicitly asks for rewriting.
+- Do not overwrite user-filled YAML text when auto-filling project overview, user analysis, core gameplay, main functions, function features, technical characteristics, or development purpose unless the user explicitly asks for rewriting.
 - Do not add fixed section 7 sub-sections to the manual template. Section 7 details are generated from the final screenshot directory.
 - Do not pre-fill the source code excerpt template with fixed modules. Generate code sections according to the screenshot-derived function list and real Unity project source code.
 

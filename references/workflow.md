@@ -14,11 +14,11 @@ Then ask the user to choose one materials package directory. Create or repair th
   报告/
 ```
 
-Collect three user-confirmed inputs before generating final materials:
+Collect these user-confirmed inputs before generating final materials:
 
 1. Filled package YAML at `<package-dir>/软著基础信息.zh.yaml`.
 2. Unity project root from `项目路径.Unity项目根目录` in the YAML.
-3. Final screenshots placed in `<package-dir>/截图/`.
+3. Final screenshots placed in `<package-dir>/截图/`, or user confirmation to create candidate screenshots through the automatic screenshot workflow.
 
 The package YAML exists mainly for:
 
@@ -30,20 +30,24 @@ Do not ask the user to fill screenshot or output paths. Those are derived from t
 
 Do not ask the user to fill code-function mapping tables unless the project evidence is insufficient.
 
-After the user confirms the YAML is filled, offer two choices:
+After the user confirms the YAML is filled, offer ordered workflow actions:
 
 1. Directly generate software copyright materials from the current `截图/` directory.
-2. Intelligently run the Unity game, generate candidate screenshots, then generate materials.
-3. Auto-fill technical characteristics, development purpose, and main functions if they are empty, then generate materials.
+2. Intelligently run the Unity game and generate candidate screenshots.
+3. Auto-fill empty project-description fields from project and screenshot evidence.
 
-If the user chooses automatic screenshots or auto-fill and `项目路径.Unity项目根目录` is empty, stop and ask the user to fill the Unity project root in YAML. Keep automatic screenshot and auto-fill strategy internal; do not expose those details in the YAML.
+Tell the user they may reply with one action or an ordered sequence, such as `2,3,1`. Execute actions strictly in the order provided by the user. Do not imply that actions 2 or 3 automatically generate final materials unless action 1 is also selected or the user explicitly asks to generate afterward.
+
+For action 2, include this user-facing note: `如果当前 Unity 项目已打开，请提前设置好 Game View 窗口分辨率；自动截图会优先沿用该窗口分辨率。`
+
+If the user chooses automatic screenshots or auto-fill and `项目路径.Unity项目根目录` is empty, stop and ask the user to fill the Unity project root in YAML. Keep automatic screenshot and auto-fill strategy internal; do not expose those details in the YAML except for the optional `截图设置` fields used to choose resolution and screen orientation.
 
 ## Generation Stages
 
 1. Run version check and stop for restart if an update is applied.
 2. Create or repair the package directory.
 3. Read and normalize the package YAML.
-4. Offer direct generation, intelligent automatic screenshotting, or automatic text completion.
+4. Offer ordered actions for direct generation, intelligent automatic screenshotting, and automatic text completion.
 5. If automatic screenshotting is chosen, follow `references/auto-screenshot-rules.md` and write `报告/自动截图报告.md`.
 6. If auto-fill is chosen, follow `references/auto-fill-rules.md`; do not overwrite user-filled text.
 7. Analyze Unity project code and produce a candidate source inventory.
@@ -67,6 +71,8 @@ Audit these five items before final generation. If any item is missing, inconsis
 3. If account, password, registration, or start-game entries appear on the login/startup/entry screen, explain them in the manual.
 4. Recommend providing both battle-exit and whole-app-exit screenshots, plus the source entry or operation for each.
 5. If a screenshot shows an unexplained button or entry, recommend adding an explanation or removing that visual element from the screenshot.
+6. If screenshots or automatic exploration reveal obvious clickable entries, second-level screens, or switchable tabs, require corresponding screenshots or documented skip reasons.
+7. If the battle module has both victory and failure outcomes, require both victory settlement and failure settlement screenshots or a documented reason one outcome could not be reached.
 
 ## Template Policy
 
@@ -92,8 +98,9 @@ Stop for user confirmation when:
 - remote version check updated the local skill and the client must restart;
 - package YAML is missing or has not been filled;
 - Unity project root is missing or does not look like a Unity project;
-- screenshot directory is missing or empty;
+- direct generation is requested but the screenshot directory is missing or empty and automatic screenshotting was not selected earlier in the ordered actions;
 - the user chose automatic screenshots or auto-fill but Unity project root is missing;
 - required application fields are empty and the user does not allow red `待补充`;
 - any mandatory audit gate has a high-risk warning and the user has not confirmed how to proceed;
 - a screenshot contains visible entries that are not covered by the manual and the intended handling is unclear.
+- battle victory/failure settlement or obvious clickable second-level interface screenshots are missing and the user has not confirmed whether to supplement or continue with risk.

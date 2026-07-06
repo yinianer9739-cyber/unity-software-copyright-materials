@@ -22,13 +22,24 @@ Use the filled package YAML to write or replace chapters 1-6:
 - `5. 游戏概述`;
 - `6. 游戏特征`.
 
-Keep the manual written for ordinary users and legal reviewers. Avoid framework-heavy implementation language in the manual.
+Keep the manual written for ordinary users and legal reviewers. Avoid framework-heavy implementation language in the manual. Follow `references/formal-output-format-rules.md` for final formatting.
 
 ## Chapter 7
 
 The template should only contain the heading `7. 游戏系统说明`. Do not keep fixed `7.1` sub-sections in the template.
 
 When generating final materials, create `7.x` sub-sections from the final screenshot directory. Usually each user-facing function screenshot group becomes one section. The section title should use the user-visible function name or a neutral software-copyright name, such as 登录与注册系统、主界面系统、卡牌系统、排行榜系统、宝箱系统、战斗系统、胜利结算、失败结算、退出系统.
+
+Do not use raw screenshot filenames as formal section titles. A screenshot named `001-启动入口或主界面.png` may support a section named `登录与启动系统` or `主界面系统`, but the final manual should not contain `7.1 001-启动入口或主界面` as the section title.
+
+Each Chapter 7 section should include:
+
+- a short paragraph explaining the function and visible entries/buttons;
+- operation/source wording such as "玩家点击主界面中的开始游戏按钮后...";
+- one or more screenshots with figure captions such as `图1 主界面功能入口`;
+- explanations for account, password, registration, start game, battle exit, and whole-app exit entries when those appear.
+
+Traceability paths such as `截图来源：截图\自动截图\...` belong in `报告/生成结果报告.md`, not in the final formal manual body.
 
 ## Registration Application Form
 
@@ -52,6 +63,8 @@ For checkbox/option fields such as software classification, development method, 
 
 Generate the application form after source analysis and source excerpt generation. If `登记信息.源程序总行数` is empty, fill the normalized generation data from the computed project-authored source program line count before patching the form. If the YAML value differs from the computed count, use the computed count for final-material consistency and list the mismatch in `报告/生成结果报告.md`.
 
+The application form must be accepted only when mapped values are visible in the original target table cells. Appending a section such as `技术预审填写信息（由软著基础信息 YAML 生成）` after the form is invalid even if the appended text contains the right data.
+
 ## Template Protection
 
 Generate all final Word files by copying the bundled templates and patching the copies in place:
@@ -61,6 +74,8 @@ Generate all final Word files by copying the bundled templates and patching the 
 - `assets/templates/计算机软件著作权登记申请表模板.doc`.
 
 Do not create final Word files from blank DOCX documents, Markdown conversion, HTML conversion, or rebuilt table layouts. For the registration application form, preserve the original template table structure, controls, checkbox/option markers, row/column counts, page setup, and spacing. If safe template-preserving editing is unavailable, stop and report the blocker instead of generating a visually different replacement.
+
+Final files must not contain template instructions, placeholder fragments, or report-only traceability text. Use `references/formal-output-format-rules.md` as the output-format gate before final response.
 
 ## Consistency
 

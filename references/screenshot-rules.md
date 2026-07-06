@@ -2,7 +2,9 @@
 
 Use `<package-dir>/截图/` as the only final screenshot directory.
 
-Final materials may only use image files whose resolved paths are under `<package-dir>/截图/`. Do not use screenshots from outside the package, previous packages, Unity project folders, browser downloads, caches, build output, or unrelated workspaces. Symlink or reparse-point escapes outside `<package-dir>/截图/` must be rejected.
+Final materials may only use image files whose resolved paths are under `<package-dir>/截图/`. Do not use screenshots from outside the package, previous packages, Unity project folders, browser downloads, caches, build output, unrelated workspaces, or diagnostic folders under `<package-dir>/报告/`. Symlink or reparse-point escapes outside `<package-dir>/截图/` must be rejected.
+
+Images under `<package-dir>/报告/`, including automatic screenshot backup folders, are evidence for debugging only. They are not final screenshot inputs.
 
 ## Inventory
 
@@ -15,6 +17,8 @@ Scan image files and write:
 - last modified time;
 - detected width and height when possible;
 - SHA-256 hash.
+
+If two screenshots in `截图/自动截图/` have identical SHA-256 hashes but different functional names, treat the later files as duplicate/stale candidates and require either removal or explicit user confirmation before generation.
 
 ## Required Reminders
 
@@ -46,3 +50,5 @@ Do not infer detailed UI controls from pixels unless the user explicitly asks fo
 When patching the manual, verify embedded image hashes when possible. A same filename can be updated; hash is the reliable signal.
 
 If a useful screenshot is outside `<package-dir>/截图/`, stop and ask the user to place it under the package screenshot directory. Do not copy it silently.
+
+If a screenshot was produced by a focus-dependent capture method, wrong-window capture, stale frame, or a manifest quality value other than `pass`, do not embed it as final evidence unless the user manually reviews it, places it in `截图/`, and confirms the risk.

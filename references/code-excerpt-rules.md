@@ -10,13 +10,21 @@ Do not restrict business code to Lua. C#, Lua, ToLua, ShaderLab, and other proje
 
 Organize code by screenshot-derived functional module. Do not predefine fixed modules in the template. If the screenshot directory contains N user-facing function groups, generate N corresponding code excerpt sections when real source evidence exists.
 
-Add a short Chinese function note before each module, such as:
+Add a short Chinese reviewer-facing module note before each module, such as:
 
 ```text
-功能备注：本部分代码体现登录界面账号输入、服务器选择和登录协议处理。
+模块说明：本模块实现登录界面账号输入、服务器选择和登录协议处理。
 ```
 
 Then include relevant file paths and code.
+
+Use `references/formal-output-format-rules.md` as the output-format gate. The final source code excerpt must not contain template instructions such as `本模板仅保留标题和页眉`, generator notes, internal audit policy, or repeated generic function notes.
+
+Keep process and compliance checks out of the final source-code attachment. Do not write sentences such as `以下代码节选按游戏功能模块组织，代码均来自项目工程源码，不显示行号。`, `代码满足 3200 行要求`, `为满足审核要求`, `根据资料包自动生成`, or similar internal workflow/proof text in the final document. Put those facts only in `报告/生成结果报告.md` or the source manifest.
+
+Module headings should be formal function names aligned with the manual, such as `主界面系统`, `排行榜系统`, `阵容配置系统`, `战斗系统`, `胜利结算系统`, and `退出系统`. Do not use raw screenshot filenames or arbitrary source-file names as the only module structure.
+
+Each module note must be concrete and written for legal reviewers. It should explain the specific visible function and why the selected code supports it. Repeating a generic sentence like "本部分代码来源于某文件，体现游戏界面、功能流程或战斗系统的真实实现" across modules is invalid formatting.
 
 ## Line Number Policy
 
@@ -41,6 +49,8 @@ Before generating the registration application form:
 5. If the YAML field is present but differs from the computed value, use the computed value in final documents and report the mismatch.
 
 The registration application form must never be generated with an empty or stale source program line count.
+
+The source code excerpt must not be accepted if it has enough lines but poor formal structure. Line count is necessary, not sufficient.
 
 ## Traceability Report
 

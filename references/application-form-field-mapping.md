@@ -38,6 +38,46 @@ If a mapped YAML value is empty:
 | `开发运行环境.运行支撑环境/支持软件` | 软件运行支撑环境/支持软件 |
 | `开发运行环境.编程语言` | 编程语言 |
 
+## In-Place Table Filling Protocol
+
+The registration application form must be filled inside the copied template's existing form table. Do not append mapped YAML data after the table.
+
+Required procedure:
+
+1. Copy `assets/templates/计算机软件著作权登记申请表模板.doc` to the output directory.
+2. Open only the copied output file for editing.
+3. Locate the main form table and fill values by nearby labels or known target cells.
+4. For each mapped field, write into the target content cell next to or under the label, preserving the label cell itself.
+5. For option fields, toggle the existing checkbox/form-control/marker in place.
+6. Save the edited copy to the requested output format.
+7. Re-open or inspect the saved output and verify the table cells contain the values.
+
+Minimum in-place verification before the application form can be accepted:
+
+- the `软件名称` target cell contains `登记信息.软件全称`;
+- the `版本号` target cell contains `登记信息.版本号`;
+- the `软件简称` target cell contains `登记信息.软件简称` when provided;
+- the `分类号` target cell contains or selects `登记信息.软件分类`;
+- software statement, publication status, development method, rights acquisition, and rights scope are selected in place;
+- development/runtime environment cells are filled in the `软件功能和技术特点` section;
+- `源程序量` contains the normalized computed source line count;
+- `开发目的`, `面向领域/行业`, `主要功能`, and `技术特点` target cells are filled or explicitly marked `待补充` according to settings.
+
+If any target label cannot be found, if the target cell cannot be determined, or if a value can only be appended outside the form table, stop and report the blocker. A generated form that contains a trailing section such as `技术预审填写信息` is invalid.
+
+For the bundled legacy `.doc` template on Windows, Word COM is acceptable only with deterministic prompt-free handling:
+
+- open the copied template, not the original template path;
+- set `Application.DisplayAlerts = 0`;
+- write fields in the copied document;
+- use `SaveAs2` or `Save` on the output copy once;
+- close documents with `DoNotSaveChanges` after saving the intended output;
+- call `Quit` with `DoNotSaveChanges`;
+- release COM objects;
+- fail if `~$` lock files remain in either `assets/templates/` or `<package-dir>/输出/`.
+
+Do not repeatedly try to dismiss Word save prompts through UI automation. A save prompt means the Word automation sequence is wrong.
+
 ## Legal-Team Fields
 
 The following registration fields are intentionally not collected in `软著基础信息.zh.yaml` because legal or operations staff usually provide them. They are ignored for technical pre-review and should be left for legal completion in the registration application form:
@@ -73,6 +113,7 @@ When editing the application form:
 - if the template is legacy `.doc` and OpenXML cannot safely edit it, use Word COM on Windows and then save to the requested output format;
 - if no available tool can preserve the template structure, stop and report the blocker;
 - report any checkbox/option field that could not be reliably selected in `报告/生成结果报告.md`.
+- never append a separate YAML summary, technical pre-review section, or unmapped report section after the application form.
 
 ## Derived Or Supporting Mapping
 

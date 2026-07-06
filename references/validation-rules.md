@@ -22,6 +22,8 @@ For `.docx` files:
 - no tracked revision markers;
 - images are embedded;
 - required text such as software name and version appears.
+- final files do not contain template instructions, placeholder fragments, appended YAML/report sections, or traceability prose that belongs in reports;
+- no Word lock files `~$*` remain in the template or output directories.
 
 ## Source Code Checks
 
@@ -31,6 +33,9 @@ For `.docx` files:
 - Source manifest reports both project-authored source program line count and selected excerpt line count.
 - The registration application form source program line count matches the normalized source count in `报告/生成结果报告.md`.
 - Excluded folders are not used unless explicitly allowed.
+- Source code excerpt does not contain template text such as `本模板仅保留标题和页眉`.
+- Source code excerpt uses formal module headings, concrete `功能备注`, project-relative `代码文件` paths, and real code. Repeated generic function notes are high risk even when the line count is sufficient.
+- Source code excerpt does not contain internal audit/process proof text such as `代码均来自项目工程源码`, `不显示行号`, `满足 3200 行`, `根据资料包自动生成`, `为满足审核要求`, or similar statements aimed at the generation workflow instead of reviewers.
 
 ## Screenshot Source Checks
 
@@ -39,6 +44,13 @@ For `.docx` files:
 - No screenshot from outside the package, external downloads, caches, build output, previous packages, or unrelated workspaces is used.
 - Symlink or reparse-point escapes outside `<package-dir>/截图/` are treated as external sources and must be rejected.
 - Pure-color, blank, loading-only, wrong-project, wrong-window, or low-information automatic screenshots are rejected or reported as low-value candidates, not silently embedded.
+- Images under `<package-dir>/报告/` are diagnostic artifacts and must not be embedded as final screenshots.
+- Automatic screenshot manifests must not treat focus-dependent `GameView ReadScreenPixel`, OS/window capture, wrong-window capture, stale frames, or duplicate function screenshots as valid background-capable final screenshots.
+- Automatic screenshot records with `skipped`, `target_not_reached`, `postcondition_failed`, `semantic_mismatch`, missing/false `postcondition_passed` for an expected view/text, or unchanged pre/post state fingerprints must not be embedded as the named function screenshot.
+- Duplicate screenshot hashes with different function names must be reported and excluded from final manual selection unless the user explicitly confirms using them as manual evidence.
+- Automatic screenshot manifests should include `interaction_method`, `capture_method`, `focus_dependency`, and `sha256` for each record. When RenderTexture fallback is used, the report or manifest should list rendered cameras; if a Unity UI camera such as `UICamera` exists but is absent from a UI screenshot capture, treat the screenshot as high risk.
+- Screenshots reached through `synthetic_view_hook`, direct `UIManager.ShowView`, model mutation, or `debug_state_injected` are fallback evidence. They must be reported as synthetic/debug-assisted and should not be presented as naturally played flow screenshots.
+- Temporary-copy launch diagnostics must report whether the Unity administrator-risk modal appeared and whether `I wish to continue at my own risk` was auto-clicked. License, project-lock, missing-module, or recovery modals must still be reported instead of silently waiting behind them.
 
 ## Manual Checks
 
@@ -46,6 +58,11 @@ For `.docx` files:
 - login/startup/entry account/password/register/start-game entries are explained when relevant;
 - battle exit and whole-app exit are either included or reported as missing/recommended;
 - unresolved fields are listed.
+- Chapter 7 section titles are functional names, not raw numbered screenshot filenames.
+- Screenshots have explanatory prose and figure captions such as `图N ...`.
+- Manual body does not contain empty shells such as `功能说明：该界面用于展示` or raw `截图来源：...` traceability lines.
+- Manual body does not contain raw object dumps such as `@{softwareFull=...}`, raw YAML/PowerShell structures, all-blue report-like prose, or generation report sections. It must read as formal software-copyright submission material.
+- Manual has a formal title/TOC/body structure when generated from the bundled template or a legal-feedback base document, including numbered chapters and reviewer-facing section names.
 
 ## Application Form Checks
 
@@ -56,3 +73,6 @@ For `.docx` files:
 - source program line count matches the normalized generation data, source report, and final application form.
 - legal-team applicant identity fields are not treated as missing YAML fields during technical pre-review.
 - checkbox/option fields are selected according to `references/application-form-field-mapping.md`, or any failed selection is reported in `报告/生成结果报告.md`.
+- mapped YAML values are written into existing registration-form table cells and option markers;
+- the application form does not contain appended sections such as `技术预审填写信息`;
+- `软件名称`, `版本号`, `分类号`, environment fields, `源程序量`, `开发目的`, `面向领域/行业`, `主要功能`, and `技术特点` are filled in-place or explicitly marked `待补充` according to settings.

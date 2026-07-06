@@ -1,17 +1,40 @@
 # Release Notes
 
+## v0.6.0
+
+### Changed
+
+- Updated `VERSION` to `0.6.0`.
+- Standardized final material generation around formal reviewer-facing Word documents instead of generation-report style output.
+- Strengthened game manual formatting rules: title page, formal table of contents, numbered chapters, functional section headings, explanatory paragraphs, screenshots, and figure captions.
+- Strengthened source-code excerpt formatting rules: use formal module headings, concrete reviewer-facing module notes, project-relative file paths, and real source code only.
+- Prohibited internal audit/process prose in the final source-code attachment, including phrases such as `代码均来自项目工程源码`, `不显示行号`, `满足 3200 行`, and `根据资料包自动生成`.
+- Prohibited raw object dumps and report-like body prose in the final game software manual.
+- Clarified that source line-count proof, screenshot traceability, and compliance evidence belong in `报告/生成结果报告.md`, manifests, and validation reports, not in reviewer-facing Word bodies.
+- Tightened output verification expectations for manual/source/application formatting, registration-form in-place field filling, and Word lock-file cleanup.
+
 ## v0.5.0
 
 ### Changed
 
 - Updated `VERSION` to `0.5.0`.
-- Reworked automatic screenshot execution into two explicit user choices: temporary project copy mode, recommended and slower, or current Unity instance takeover mode, faster but requiring exact user confirmation.
+- Reworked automatic screenshot execution into explicit second-round choices: temporary project copy mode, current Unity instance takeover mode, and Codex MCP + Unity MCP plugin mode.
+- Added MCP screenshot mode prerequisites: users must confirm both the Codex MCP plugin and Unity engine MCP plugin are installed, and callable MCP tools must be available in the current client session before the MCP flow starts.
+- Limited automatic `VERSION` checks to first-round generation entry requests. Downstream actions such as `已填好`, `继续`, automatic screenshots, MCP screenshots, auto-fill, validation, or final generation for a known materials package now skip the version check.
 - Made Unity-internal screenshot capture mandatory for automatic screenshots. OS mouse control and desktop/window screenshots are no longer valid final automatic screenshot sources.
 - Added a strict screenshot source whitelist: final materials may only use images resolved under the selected package `截图/` directory; external images and symlink escapes are rejected.
 - Added screenshot manifest requirements for automatic captures, including source project, working project, scene, action, capture method, and quality result.
 - Added template-protection mode for Word output: copy bundled templates first and patch the copies in place; do not rebuild DOC/DOCX files or reconstruct registration-form tables.
 - Added source line-count closure: generate/analyze source code before the application form, compute source program line count and selected excerpt line count, fill the application form automatically, and verify consistency.
 - Strengthened `scan_screenshots.py` to reject image files whose resolved paths are outside the screenshot directory.
+- Added temporary-copy screenshot diagnostics. Failed runs must report the failed stage, log evidence, root cause or strongest hypothesis, attempted repair, and recommended next action instead of silently falling back.
+- Administrator-risk Unity startup dialogs are now handled by default: when `Unity is running as administrator` appears, the launcher should automatically click `I wish to continue at my own risk` and record the action instead of waiting for the user.
+- Reclassified `GameView ReadScreenPixel` and other window/focus-dependent pixel capture as foreground-only fallback. Current-instance mode must first attempt focus-independent Unity capture, and foreground fallback requires separate user confirmation.
+- Strengthened screenshot source rules: final materials may not use images from `报告/` backup folders, old failed rounds, external folders, caches, or unrelated packages.
+- Added formal output format rules for the manual, source code excerpt, and registration application form.
+- Required registration form values to be filled into existing cells and option markers. Appending `技术预审填写信息` or similar YAML summaries after the form is invalid.
+- Added deterministic Word COM save/close requirements to avoid Word save prompts and leftover `~$` lock files.
+- Rebuilt `verify_outputs.py` so the verifier stops on placeholder manual text, raw screenshot paths in the manual, template text in source excerpts, appended registration-form sections, focus-dependent screenshot capture, duplicate auto-screenshot hashes, and Word lock files.
 
 ## v0.4.2
 
